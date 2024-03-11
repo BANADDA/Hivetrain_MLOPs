@@ -61,38 +61,39 @@
             <div class="card  mr-3">
                 <div class="card-header">
                     <h5 class="card-title">Recent Actions</h5>
+                    <p class="card-text font-weight-normal text-dark custom-font-size">Track the recent machine learning training pipeline activities in Hivetrain.</p>
+                  
                 </div>
-                <div class="card-body">
-                    <p class="card-text font-weight-normal text-dark custom-font-size">Initiate a new machine learning training pipeline with Hivetrain to kickstart your project.</p>
-                    <div class="container-fluid">
+                <div class="card-body">  <div class="container-fluid">
                         <table class="table table-bordered border-primary">
                           <thead class="table-dark">
                             <tr>
-                              <th>Model ID</th>
-                              <th>Status</th>
-                              <th>Create On</th>
-                              <th>Closed On</th>
+                                <th>Model ID</th>
+                                <th>Status</th>
+                                <th>Create On</th>
+                                <th>Closed On</th>
                             </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td>John</td>
-                              <td>Doe</td>
-                              <td>john@example.com</td>
-                              <td>john@example.com</td>
-                            </tr>
-                            <tr>
-                              <td>Mary</td>
-                              <td>Moe</td>
-                              <td>mary@example.com</td>
-                              <td>mary@example.com</td>
-                            </tr>
-                            <tr>
-                              <td>July</td>
-                              <td>Dooley</td>
-                              <td>july@example.com</td>
-                              <td>july@example.com</td>
-                            </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>M1234</td>
+                            <td><span class="status">Running</span></td>
+                            <td>2023-10-15</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>M5678</td>
+                            <td><span class="status">Completed</span></td>
+                            <td>2023-11-20</td>
+                            <td>2023-12-05</td>
+                        </tr>
+                        <tr>
+                            <td>M91011</td>
+                            <td><span class="status">Stopped</span></td>
+                            <td>2024-01-03</td>
+                            <td>-</td>
+                        </tr>
+                        
                           </tbody>
                         </table>
                       </div>
@@ -105,15 +106,14 @@
                     <div class="row align-items-center justify-content-between">
                         <div class="col">
                             <h5 class="card-title">Projects</h5>
+                    <p class="card-text font-weight-normal text-dark custom-font-size">Monitor your machine learning projects and track their progress with Hivetrain.</p>
+                     
                         </div>
                         <div class="col-auto">
                             <a class="btn article" href="#" role="button"><i class='bx bx-plus'></i> New</a>
                         </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <p class="card-text font-weight-normal text-dark custom-font-size">Upload, manage, explore your datasets, or conduct exploratory data analysis (EDA), with Hivetrain.</p>
-                     
+                </div><div class="card-body">
                     <div class="container-fluid">
                         <div class="d-flex justify-content-end mb-2">
                             <div class="btn-group" id="btnGroup">
@@ -133,27 +133,28 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>John</td>
-                                    <td>John</td>
-                                    <td>Doe</td>
-                                    <td>john@example.com</td>
+                                    <td>1</td>
+                                    <td>Project A</td>
+                                    <td><span class="status">Active</span></td>
+                                    <td>2023-10-20</td>
                                 </tr>
                                 <tr>
-                                    <td>Mary</td>
-                                    <td>Mary</td>
-                                    <td>Moe</td>
-                                    <td>mary@example.com</td>
+                                    <td>2</td>
+                                    <td>Project B</td>
+                                    <td>Completed</td>
+                                    <td>2023-11-05</td>
                                 </tr>
                                 <tr>
-                                    <td>July</td>
-                                    <td>July</td>
-                                    <td>Dooley</td>
-                                    <td>july@example.com</td>
+                                    <td>3</td>
+                                    <td>Project C</td>
+                                    <td>Active</td>
+                                    <td>2023-12-01</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
+                
             </div>
         </div>
         
@@ -163,6 +164,67 @@
 </div>
 
 <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get all status cells in the table
+        const statusCells = document.querySelectorAll(".table tbody td:nth-child(3)"); // Targeting the third column (Status) cells
+
+        // Loop through each cell and apply different background colors and font weights based on the status
+        statusCells.forEach(cell => {
+            const status = cell.textContent.trim().toLowerCase();
+            let backgroundColor;
+            let fontWeight;
+            let color;
+
+            // Set background color and font weight based on the status
+            if (status === "active") {
+                backgroundColor = "#91F696"; // Dark green for active projects
+                fontWeight = "normal"; // Normal font weight for active projects
+                fontWeight = "bold";
+                color = "black";
+            } else if (status === "completed") {
+                backgroundColor = "#FE9393"; // Red for completed projects
+                fontWeight = "bold"; // Bold font weight for completed projects
+                color = "black";
+            } else {
+                backgroundColor = ""; // No background color for other statuses
+                fontWeight = "normal"; // Default font weight for other statuses
+                color = "black";
+            }
+
+            // Apply the background color and font weight to the cell
+            cell.style.backgroundColor = backgroundColor;
+            cell.style.fontWeight = fontWeight;
+            cell.style.color = color;
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get all status cells in the table
+        const statusCells = document.querySelectorAll(".table tbody td:nth-child(2)"); // Targeting the second column (Status) cells
+
+        // Loop through each cell and wrap the text in a span element for highlighting
+        statusCells.forEach(cell => {
+            const status = cell.textContent.trim().toLowerCase();
+            let highlightedText;
+
+            // Apply highlighting based on the status
+            if (status === "running") {
+                highlightedText = `<span class="status-highlight-running">${status}</span>`;
+            } else if (status === "completed") {
+                highlightedText = `<span class="status-highlight-completed">${status}</span>`;
+            } else if (status === "stopped") {
+                highlightedText = `<span class="status-highlight-stopped">${status}</span>`;
+            } else if (status === "pending") {
+                highlightedText = `<span class="status-highlight-pending">${status}</span>`; // Handle "Pending" status
+            } else {
+                // If status doesn't match any expected values, keep it as it is
+                highlightedText = status;
+            }
+            // Add more conditions as needed
+
+            // Replace the cell's content with the highlighted text
+            cell.innerHTML = highlightedText;
+        });
+    });
     // Add click event listener to buttons
     const btnGroup = document.getElementById('btnGroup');
     const buttons = btnGroup.querySelectorAll('.btn');
@@ -179,14 +241,51 @@
     });
 </script>
 
+
+
 <style>
     
+   table {
+     width: 100%; /* Ensure table takes up full width */
+   }
+
+   table td {
+     text-align: center; /* Center-align content within table cells */
+   }
+   table thead {
+     text-align: center; /* Center-align content within table cells */
+   }
+    /* Define styles for different statuses */
+    .status-highlight-running,
+    .status-highlight-completed,
+    .status-highlight-stopped {
+        display: inline-block;
+        padding: 2px 4px; /* Adjust padding as needed */
+        border-radius: 10px; /* Reduce border radius for rounded edges */
+        color: white; /* black text */
+        font-weight: bold;
+    }
+
+    .status-highlight-running {
+        background-color: #905F04; /* Darker orange for running status */
+    }
+
+    .status-highlight-completed {
+        background-color: #029402; /* Darker green for completed status */
+    }
+
+    .status-highlight-stopped {
+        background-color: #8B0000; /* Darker red for stopped status */
+    }
+
     .custom-font-size {
-        font-size: 14px; 
-      }
-      .jumbotron-custom {
-        padding: 20px; 
-      }
+        font-size: 14px;
+    }
+
+    .jumbotron-custom {
+        padding: 20px;
+    }
+
     .card {
         position: relative;
     }
@@ -223,7 +322,7 @@
         align-items: center;
         z-index: 1; /* Ensure the buttons are above the mask */
     }
-    
+
     .card-mask {
         background: rgba(0, 0, 0, 0.5); /* Semi-transparent mask layer */
     }
@@ -240,7 +339,8 @@
     .btn-outline-dark {
         width: 120px; /* Adjust width as needed */
     }
-    
+
 </style>
+
 
 {% endblock %}
