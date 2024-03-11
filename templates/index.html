@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    MLOPs
+{% endblock %}
+
+{% block content %}
+
+<div class="container pb-2 d-flex align-items-center justify-content-center">
+    <div class="jumbotron jumbotron-custom">
+        <h3 class="display-8">Hivetrain</h3>
+        <p class="text-dark font-weight-normal custom-font-size">Hivetrain is a powerful tool designed to streamline your machine learning workflows.
+            Whether you're a seasoned data scientist or just starting out, our platform provides the tools and resources you need to succeed.
+        </p>
+        <hr class="my-2">
+        <p class="text-dark font-weight-normal custom-font-size">
+            Explore advanced algorithms, manage datasets effortlessly, and unleash the full potential of your models.
+        </p>
+        <a class="btn btn-primary article" href="#" role="button">Learn more</a>
+    </div>
+</div>
+<div class="container">
+<div class="container d-flex align-items-center justify-content-center">
+    <div class="row">
+        <div class="col-sm-6 mb-4"> 
+            <div class="card  mr-5" style="width: 25rem;">
+                <div class="card-inner">
+                    <img class="card-img-top px-2" src="https://www.researchgate.net/profile/Matthieu-Guillaumin/publication/261182364/figure/fig2/AS:282180778512402@1444288548970/Image-segmentation-examples-from-Stanford-background-dataset-for-pairwise-non-linear.png"
+                        alt="Card image cap">
+                    <div class="additional-content">
+                        <a href="{% url 'datasets' %}" class="btn article d-flex align-items-center justify-content-center">View Datasets</a>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text custom-font-size">Explore and manage existing datasets to enhance your model training</p>
+                    </div>
+                    <div class="card-mask"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 mb-4"> 
+            <div class="card" style="width: 25rem;">
+                <div class="card-inner">
+                    <img class="card-img-top" src="https://i0.wp.com/eos.org/wp-content/uploads/2020/07/data-streams-eos-august.png?fit=820%2C615&ssl=1"
+                        alt="Card image cap">
+                    <div class="additional-content">
+                        <a href="#" class="btn article d-flex align-items-center justify-content-center">ML Models</a>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text custom-font-size">Manage your best performing models in your training pipelines</p>
+                    </div>
+                    <div class="card-mask"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container d-flex align-items-center justify-content-center">
+    <div class="col">
+        <div class="container p-2">
+            <div class="card  mr-3">
+                <div class="card-header">
+                    <h5 class="card-title">Recent Actions</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text font-weight-normal text-dark custom-font-size">Initiate a new machine learning training pipeline with Hivetrain to kickstart your project.</p>
+                    <div class="container-fluid">
+                        <table class="table table-bordered border-primary">
+                          <thead class="table-dark">
+                            <tr>
+                              <th>Model ID</th>
+                              <th>Status</th>
+                              <th>Create On</th>
+                              <th>Closed On</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>John</td>
+                              <td>Doe</td>
+                              <td>john@example.com</td>
+                              <td>john@example.com</td>
+                            </tr>
+                            <tr>
+                              <td>Mary</td>
+                              <td>Moe</td>
+                              <td>mary@example.com</td>
+                              <td>mary@example.com</td>
+                            </tr>
+                            <tr>
+                              <td>July</td>
+                              <td>Dooley</td>
+                              <td>july@example.com</td>
+                              <td>july@example.com</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                </div>
+            </div>
+        </div>
+        <div class="container p-2">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row align-items-center justify-content-between">
+                        <div class="col">
+                            <h5 class="card-title">Projects</h5>
+                        </div>
+                        <div class="col-auto">
+                            <a class="btn article" href="#" role="button"><i class='bx bx-plus'></i> New</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="card-text font-weight-normal text-dark custom-font-size">Upload, manage, explore your datasets, or conduct exploratory data analysis (EDA), with Hivetrain.</p>
+                     
+                    <div class="container-fluid">
+                        <div class="d-flex justify-content-end mb-2">
+                            <div class="btn-group" id="btnGroup">
+                                <button type="button" class="btn btn-outline-dark">All</button>
+                                <button type="button" class="btn btn-outline-dark">Pending</button>
+                                <button type="button" class="btn btn-outline-dark">Completed</button>
+                            </div>
+                        </div>
+                        <table class="table table-bordered border-primary">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Project Name</th>
+                                    <th>Status</th>
+                                    <th>Last Checked</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>John</td>
+                                    <td>John</td>
+                                    <td>Doe</td>
+                                    <td>john@example.com</td>
+                                </tr>
+                                <tr>
+                                    <td>Mary</td>
+                                    <td>Mary</td>
+                                    <td>Moe</td>
+                                    <td>mary@example.com</td>
+                                </tr>
+                                <tr>
+                                    <td>July</td>
+                                    <td>July</td>
+                                    <td>Dooley</td>
+                                    <td>july@example.com</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+</div>
+</div>
+
+<script>
+    // Add click event listener to buttons
+    const btnGroup = document.getElementById('btnGroup');
+    const buttons = btnGroup.querySelectorAll('.btn');
+
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                btn.style.backgroundColor = ''; // Remove background color for all buttons
+            });
+            button.classList.add('active');
+            button.style.backgroundColor = 'green'; // Set background color for active button
+        });
+    });
+</script>
+
+<style>
+    
+    .custom-font-size {
+        font-size: 14px; 
+      }
+      .jumbotron-custom {
+        padding: 20px; 
+      }
+    .card {
+        position: relative;
+    }
+
+    .card-inner {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .additional-content,
+    .card-mask {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    .card:hover .card-mask,
+    .card:hover .additional-content {
+        opacity: 1;
+    }
+
+    .card-img-top {
+        height: 200px; /* Adjust height as needed */
+        object-fit: cover; /* Ensure the image covers the entire space */
+    }
+
+    .additional-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1; /* Ensure the buttons are above the mask */
+    }
+    
+    .card-mask {
+        background: rgba(0, 0, 0, 0.5); /* Semi-transparent mask layer */
+    }
+
+    .container-fluid {
+        width: 100%;
+        padding-right: 15px;
+        padding-left: 15px;
+        margin-right: auto;
+        margin-left: auto;
+    }
+
+    /* Ensure buttons have the same dimensions */
+    .btn-outline-dark {
+        width: 120px; /* Adjust width as needed */
+    }
+    
+</style>
+
+{% endblock %}

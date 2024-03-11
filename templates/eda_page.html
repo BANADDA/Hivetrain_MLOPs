@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    EDA - {{ file_name }} - MLOPs
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-2">
+        <button onclick="goBack()" class="btn btn-secondary mb-2">Go Back</button>
+        <p class="h3 text-center font-weight-bold text-dar mb-4">Exploratory Data Analysis (EDA)</p>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white text-center">
+                        Dataset Information
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text"><strong class="data-label">Dataset ID:</strong> <span class="data-value">{{ dataset_id }}</span></p>
+                        <p class="card-text"><strong class="data-label">File Name:</strong> <span class="data-value">{{ file_name }}</span></p>
+                        <p class="card-text"><strong class="data-label">Number of Rows:</strong> <span class="data-value">{{ dataset_info.num_rows }}</span></p>
+                        <p class="card-text"><strong class="data-label">Number of Columns:</strong> <span class="data-value">{{ dataset_info.num_columns }}</span></p>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Column Name</th>
+                                    <th>Data Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for column, data_type in dataset_info.column_data_types.items %}
+                                    <tr>
+                                        <td>{{ column }}</td>
+                                        <td>{{ data_type }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>                    
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white text-center">
+                        Analysis Results
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Column Name</th>
+                                        <th>Distinct Values</th>
+                                        <th>Percentage of Distinct Values</th>
+                                        <th>Missing Values</th>
+                                        <th>Percentage of Missing Values</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for column_info in columns_info %}
+                                        <tr>
+                                            <td>{{ column_info.column_name }}</td>
+                                            <td>{{ column_info.distinct_values }}</td>
+                                            <td>{{ column_info.percentage_distinct_values | floatformat:2 }}%</td>
+                                            <td>{{ column_info.missing_values }}</td>
+                                            <td>{{ column_info.percentage_missing_values | floatformat:2 }}%</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+    <style>
+        .card-header {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .card-body {
+            font-size: 16px;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th, .table td {
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+        
+        .bg-primary {
+            background-color: #007bff !important;
+        }
+        
+        .bg-success {
+            background-color: #28a745 !important;
+        }
+        
+        .text-white {
+            color: #fff !important;
+        }        
+        .data-label {
+            font-weight: bold;
+            color: #007bff; /* Blue color */
+            margin-right: 5px;
+        }
+        
+        .data-value {
+            color: #070707; /* Green color */
+            font-size: 15px;
+            font-weight: semi-bold
+        }        
+    </style>
+{% endblock %}

@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Datasets - MLOPs
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <!-- Bootstrap alert for upload success -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Datasets</h2>
+                <hr class="my-2 mb-4">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Upload New Dataset</h5>
+                                <p class="card-text">Upload a new dataset to analyze and train machine learning models. Provide your data in a supported format for further processing.</p>
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn article btn-info" data-toggle="modal" data-target="#exampleModalCenter">Upload Dataset</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">View Existing Datasets</h5>
+                                <p class="card-text">View your existing datasets to explore their contents, analyze patterns, and perform data preprocessing before training machine learning models.</p>
+                                <a href="#" class="btn btn-info">View Datasets</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table for displaying datasets -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <h2>Dataset Table</h2>
+
+
+                <div class="row gy-2 mb-2">  
+
+                <!-- Search input -->
+                <div class="form-group">
+                    <label for="searchInput">Search:</label>
+                    <input type="text" class="form-control" id="searchInput" oninput="searchFiles()">
+                </div>
+            </div>
+
+                <table class="table table-bordered" style="background-color: white;" id="datasetTable">
+                    <thead>
+                        <tr>
+                            <th style="border: 1px solid black;">File Name</th>
+                            <th style="border: 1px solid black;">Upload Date</th>
+                            <th style="border: 1px solid black;">EDA</th>
+                            <th style="border: 1px solid black;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Loop through datasets and display each row -->
+                        {% for dataset in datasets %}
+                            <tr>
+                                <td style="border: 1px solid black; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ dataset.file_name }}</td>
+                                <td style="border: 1px solid black;">{{ dataset.upload_date }}</td>
+                                <td style="border: 1px solid black;">
+                                    <!-- Link to navigate to another screen with file ID and name -->
+                                    <a href="{% url 'eda_page' dataset.id %}?file_name={{ dataset.file_name }}" class="btn btn-primary">EDA</a>
+                                </td>                                
+                                <td style="border: 1px solid black;">
+                                    <!-- Button trigger delete confirmation modal -->
+                                    <button class="btn btn-danger" data-toggle="modal" data-target="#deleteConfirmationModal{{ dataset.id }}"><i class="fas fa-trash-alt"></i></button>
+                                    
+                                    <!-- Delete confirmation modal -->
+                                    <div class="modal fade" id="deleteConfirmationModal{{ dataset.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Are you sure you want to delete '{{ dataset.file_name }}'?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                    <a href="{% url 'delete_dataset' dataset.id %}" class="btn btn-danger">Delete</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="col-md-12 text-center">
+                    <ul class="pagination pagination-lg pager" id="developer_page"></ul>
+                </div>
+            </div>
+        </div>
+        
+
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Upload Dataset</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form for uploading dataset -->
+                    <form method="post" enctype="multipart/form-data" action="{% url 'upload' %}">
+                        {% csrf_token %}
+                        <p class="text-dark font-weight-normal">Select the file from your local system to upload.</p>
+                        <input type="file" name="file" class="form-control form-control-sm">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function searchFiles() {
+            var searchValue = $("#searchInput").val().toLowerCase();
+            $("#datasetTable tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(searchValue) > -1);
+            });
+        }
+
+        $(document).ready(function() {    
+            $('#datasetTable').pageMe({
+              pagerSelector: '#developer_page',
+              showPrevNext: true,
+              hidePageNumbers: false,
+              perPage: 3
+            });    
+        });
+        
+    
+        // Automatically hide messages after 2000 milliseconds (2 seconds)
+        setTimeout(function () {
+            $(".alert").alert("close");
+        }, 2000);
+    </script>
+
+    <style>
+        .wrapper {
+            margin-top: 5vh;
+          }
+          
+          .dataTables_filter {
+            float: right;
+          }
+          
+          .table-hover > tbody > tr:hover {
+            background-color: #ccffff;
+          }
+          
+          @media only screen and (min-width: 768px) {
+            .table {
+              table-layout: fixed;
+              max-width: 100% !important;
+            }
+          }
+          
+          thead {
+            background: #ddd;
+          }
+          
+          .table td:nth-child(2) {
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          
+          .highlight {
+            background: #ffff99;
+          }
+          
+          @media only screen and (max-width: 767px) {
+            /* Force table to not be like tables anymore */
+            table,
+          thead,
+          tbody,
+          th,
+          td,
+          tr {
+              display: block;
+            }
+          
+            /* Hide table headers (but not display: none;, for accessibility) */
+            thead tr,
+          tfoot tr {
+              position: absolute;
+              top: -9999px;
+              left: -9999px;
+            }
+          
+            td {
+              /* Behave  like a "row" */
+              border: none;
+              border-bottom: 1px solid #eee;
+              position: relative;
+              padding-left: 50% !important;
+            }
+          
+            td:before {
+              /* Now like a table header */
+              position: absolute;
+              /* Top/left values mimic padding */
+              top: 6px;
+              left: 6px;
+              width: 45%;
+              padding-right: 10px;
+              white-space: nowrap;
+            }
+          
+            .table td:nth-child(1) {
+              background: #ccc;
+              height: 100%;
+              top: 0;
+              left: 0;
+              font-weight: bold;
+            }
+          
+            /*
+            Label the data
+            */
+            td:nth-of-type(1):before {
+              content: "File Name";
+            }
+          
+            td:nth-of-type(2):before {
+              content: "Upload Date";
+            }
+          
+            td:nth-of-type(3):before {
+              content: "EDA";
+            }
+          
+            td:nth-of-type(4):before {
+              content: "Actions";
+            }
+            .dataTables_length {
+              display: none;
+            }
+          }
+    </style>
+    
+{% endblock %}
