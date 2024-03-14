@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .models import Dataset
-from django.http import JsonResponse
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+
 from . import utils
+from .models import Dataset, Project
+
 
 def index(request):
     return render(request, 'index.html', {})
@@ -12,6 +13,21 @@ def datasets(request):
     # Fetch all dataset objects from the database
     datasets = Dataset.objects.all()
     return render(request, 'datasets.html', {'datasets': datasets})
+
+def projects(request):
+    projects = Project.objects.all()
+    return render(request, 'index_projects.html', {'projects': projects})
+
+def new_project(request):
+    return render(request, 'new_project.html')
+
+def project_detail(request, project_id=None, project_name=None):
+    project = None
+    if project_id:
+        project = get_object_or_404(Project, id=project_id)
+    elif project_name:
+        project = get_object_or_404(Project, name=project_name)
+    return render(request, 'project_detail.html', {'project': project})
 
 def eda_page(request, dataset_id):
     try:

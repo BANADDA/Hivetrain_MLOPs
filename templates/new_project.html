@@ -1,0 +1,17 @@
+<!-- new_project.html -->
+
+{% extends 'base.html' %}
+{% block title %}
+    New Project
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Create New Project</h2>
+    <form method="post">
+        {% csrf_token %}
+        <!-- Your form fields go here -->
+        <button type="submit" class="btn btn-primary">Create Project</button>
+    </form>
+</div>
+{% endblock %}

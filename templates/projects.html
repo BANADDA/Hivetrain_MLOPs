@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Datasets - MLOPs
+{% endblock %}
+
+{% block content %}
+<script>
+    window.onload = function() {
+        // Get the current URL
+        var url = window.location.href;
+
+        // Extract the project name from the URL
+        var projectName = url.substring(url.lastIndexOf('/') + 1);
+
+        // Update the heading to include the project name
+        var heading = document.querySelector('.mb-0');
+        heading.innerHTML += projectName;
+    };
+</script>
+
+<div class="container">
+    <div class="row align-items-center mb-2">
+      <div class="col">
+        <h2 class="mb-0">Projects/</h2>
+      </div>
+      <div class="col text-right">
+        <!-- Add your button here -->
+        <a id="myModal" class="btn article">Create New Project</a>
+      </div>
+    </div>
+    <hr class="mb-5">
+    {% block inner_content %}
+        <!-- Include your modal here -->
+        {% include 'modal.html' %}
+    {% endblock %}
+</div>
+<!-- modal.html -->
+<div id="myModal" class="modal">
+  <!-- Modal content -->
+  <div class="modal-content">
+      <!-- <span class="close">&times;</span> -->
+      <p class="modal-text">To get started, provide the project name and description</p>
+      <hr class="line">
+      <div class="container">
+          <form id="projectForm" class="needs-validation" novalidate>
+              <div class="form-group"></div>
+              <div class="form-group">
+                  <label for="projectName">Enter project name</label>
+                  <input type="text" class="form-control" id="projectName" name="projectName" aria-describedby="nameHelp" placeholder="Project name" required>
+                  <small id="nameHelp" class="form-text text-muted">Project name should be unique and easy to remember.</small>
+                  <div class="invalid-feedback">Please provide a valid project name.</div>
+              </div>
+              <div class="form-group">
+                  <label for="projectDetails">Enter project details</label>
+                  <input type="text" class="form-control" id="projectDetails" name="projectDetails" placeholder="Project details" required>
+                  <div class="invalid-feedback">Please provide valid project details.</div>
+              </div>
+              <div class="form-check">
+                  <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
+                  <label class="form-check-label" for="terms">I accept the <a href="#terms1">terms</a> and <a href="#conditions">conditions</a></label>
+                  <div class="invalid-feedback">You must accept the terms and conditions.</div>
+              </div>
+              <hr class="line">
+              <div style="text-align: right;">
+                  <button type="button" class="btn btn-secondary mr-2" onclick="closeModal()">Cancel</button>
+                  <button type="submit" class="btn article">Continue</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+
+
+
+<!-- CSS for the modal -->
+<style>
+  .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      padding-top: 100px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 40%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+  }
+
+  .close {
+      color: #090909;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+  }
+
+  .line {
+      border: none;
+      height: 1px;
+      background-color: #080808;
+      width: 100%;
+  }
+
+  .modal-text {
+      margin: 0;
+      color: #2a2929;
+      font-weight: bold;
+      font-size: 14px;
+  }
+</style>
+
+<script>
+  // Function to close modal
+  function closeModal() {
+      var modal = document.getElementById("myModal");
+      modal.style.display = "none";
+  }
+
+  // Function to handle form submission
+  function handleSubmit(event) {
+      var form = document.getElementById("projectForm");
+
+      // Check if the form is valid
+      if (form.checkValidity()) {
+          event.preventDefault(); // Prevent default form submission
+
+          // Get values from form fields
+          var projectName = document.getElementById("projectName").value;
+          var projectDetails = document.getElementById("projectDetails").value;
+
+          // Redirect to the desired screen with parameters
+          window.location.href = "{% url 'new_project' %}?projectName=" + encodeURIComponent(projectName) + "&projectDetails=" + encodeURIComponent(projectDetails);
+      } else {
+          event.preventDefault();
+          event.stopPropagation();
+      }
+
+      // Add validation classes to show feedback
+      form.classList.add("was-validated");
+  }
+
+  // Add event listener to form submission
+  document.getElementById("projectForm").addEventListener("submit", handleSubmit, false);
+</script>
+
+{% endblock %}

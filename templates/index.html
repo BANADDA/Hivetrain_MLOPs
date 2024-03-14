@@ -43,7 +43,7 @@
                     <img class="card-img-top" src="https://i0.wp.com/eos.org/wp-content/uploads/2020/07/data-streams-eos-august.png?fit=820%2C615&ssl=1"
                         alt="Card image cap">
                     <div class="additional-content">
-                        <a href="#" class="btn article d-flex align-items-center justify-content-center">ML Models</a>
+                        <a href="{% url 'projects' %}" class="btn article d-flex align-items-center justify-content-center">ML Models</a>
                     </div>
                     <div class="card-body">
                         <p class="card-text custom-font-size">Manage your best performing models in your training pipelines</p>
@@ -62,44 +62,46 @@
                 <div class="card-header">
                     <h5 class="card-title">Recent Actions</h5>
                     <p class="card-text font-weight-normal text-dark custom-font-size">Track the recent machine learning training pipeline activities in Hivetrain.</p>
-                  
                 </div>
-                <div class="card-body">  <div class="container-fluid">
-                        <table class="table table-bordered border-primary">
-                          <thead class="table-dark">
-                            <tr>
-                                <th>Model ID</th>
-                                <th>Status</th>
-                                <th>Create On</th>
-                                <th>Closed On</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>M1234</td>
-                            <td><span class="status">Running</span></td>
-                            <td>2023-10-15</td>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <td>M5678</td>
-                            <td><span class="status">Completed</span></td>
-                            <td>2023-11-20</td>
-                            <td>2023-12-05</td>
-                        </tr>
-                        <tr>
-                            <td>M91011</td>
-                            <td><span class="status">Stopped</span></td>
-                            <td>2024-01-03</td>
-                            <td>-</td>
-                        </tr>
-                        
-                          </tbody>
-                        </table>
-                      </div>
+                <div class="card-body">
+                    <div class="container-fluid">
+                        <div class="table-responsive">
+                            <table class="table table-bordered border-primary">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Model ID</th>
+                                        <th>Status</th>
+                                        <th>Create On</th>
+                                        <th>Closed On</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>M1234</td>
+                                        <td><span class="status">Running</span></td>
+                                        <td>2023-10-15</td>
+                                        <td>-</td>
+                                    </tr>
+                                    <tr>
+                                        <td>M5678</td>
+                                        <td><span class="status">Completed</span></td>
+                                        <td>2023-11-20</td>
+                                        <td>2023-12-05</td>
+                                    </tr>
+                                    <tr>
+                                        <td>M91011</td>
+                                        <td><span class="status">Stopped</span></td>
+                                        <td>2024-01-03</td>
+                                        <td>-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+        
         <div class="container p-2">
             <div class="card">
                 <div class="card-header">
@@ -110,11 +112,12 @@
                      
                         </div>
                         <div class="col-auto">
-                            <a class="btn article" href="#" role="button"><i class='bx bx-plus'></i> New</a>
+                            <a class="btn article" href="{% url 'projects' %}"><i class='bx bx-plus'></i> New</a>
                         </div>
                     </div>
                 </div><div class="card-body">
                     <div class="container-fluid">
+                        <div class="table-responsive">
                         <div class="d-flex justify-content-end mb-2">
                             <div class="btn-group" id="btnGroup">
                                 <button type="button" class="btn btn-outline-dark">All</button>
@@ -152,6 +155,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
                     </div>
                 </div>
                 
