@@ -19,6 +19,8 @@
     <link rel="stylesheet" href="{% static 'fa/css/all.min.css' %}" />
     <script src="{% static 'js/bootstrap.min.js' %}"></script> {% endcomment %}
     <title>{% block title %}MLOPs{% endblock %}</title>
+    <!-- UniIcon CDN Link  -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     <link
       href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"
       rel="stylesheet"
@@ -316,14 +318,14 @@ display: inline-block;
           left: 0;
           top: 0;
           height: 100%;
-          width: 78px;
+          width: 70px;
           background: #11101d;
           padding: 6px 14px;
           z-index: 99;
           transition: all 0.5s ease;
         }
         .sidebar.open {
-          width: 250px;
+          width: 200px;
         }
         .sidebar .logo-details {
           height: 60px;
@@ -479,7 +481,7 @@ display: inline-block;
         .sidebar li.profile {
           position: fixed;
           height: 60px;
-          width: 78px;
+          width: 70px;
           left: 0;
           bottom: -8px;
           padding: 10px 14px;
@@ -488,7 +490,7 @@ display: inline-block;
           overflow: hidden;
         }
         .sidebar.open li.profile {
-          width: 250px;
+          width: 200px;
         }
         .sidebar li .profile-details {
           display: flex;
