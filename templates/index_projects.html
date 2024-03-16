@@ -50,8 +50,12 @@
     <div class="center-container bg-white">
         <img src="https://cdni.iconscout.com/illustration/premium/thumb/male-web-developer-doing-research-on-development-5691622-4759504.png" alt="No projects available" width="350" height="350" class="img-fluid">
         <h6 class="font-weight-bold">No projects available</h6>
+        <div class="paragraph-wrapper">
         <p>To create your new machine learning project, press the create project button on top of the screen</p>
+        </div>
+        <div class="pb-5">
         <a id="myBtn2" class="btn article">Create New Project</a>
+        </div>
         {% comment %} {% include 'modal.html' %} {% endcomment %}
     </div>
     <!-- The Modal -->
@@ -209,7 +213,7 @@ btn2.onclick = function () {
     align-items: center;
     justify-content: center;
     height: 60vh;
-    padding: 20px; /* Add padding */
+    padding: 35px; /* Add padding */
     border-radius: 10px; /* Add border radius */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add box shadow */
     margin-bottom: 20px; /* Add margin bottom */
@@ -219,11 +223,16 @@ btn2.onclick = function () {
     margin-bottom: 10px; /* Add margin bottom to the heading */
 }
 
-.center-container p {
-    font-size: 14px; /* Adjust font size */
-    font-weight: bold;
-    color: #666; /* Adjust color */
+.paragraph-wrapper {
+    font-size: 18px; /* Adjust font size */
+    font-weight: 800;
+    color: #020202; /* Adjust color */
     margin-bottom: 10px; /* Add margin bottom */
+    color: var(--gray-6);
+    line-height: 1.5;
+    max-width: 450px;
+    text-align: center;
+    margin-bottom: 10px;
 }
 
   /* The line */

@@ -19,7 +19,7 @@ def projects(request):
     return render(request, 'index_projects.html', {'projects': projects})
 
 def new_project(request):
-    return render(request, 'new_project.html')
+    return render(request, 'exps/no_exp.html')
 
 def project_detail(request, project_id=None, project_name=None):
     project = None

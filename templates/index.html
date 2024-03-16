@@ -31,7 +31,7 @@
                         <a href="{% url 'datasets' %}" class="btn article d-flex align-items-center justify-content-center">View Datasets</a>
                     </div>
                     <div class="card-body">
-                        <p class="card-text custom-font-size">Explore and manage existing datasets to enhance your model training</p>
+                        <p class="card-text custom-font">Explore and manage existing datasets to enhance your model training</p>
                     </div>
                     <div class="card-mask"></div>
                 </div>
@@ -46,7 +46,7 @@
                         <a href="{% url 'projects' %}" class="btn article d-flex align-items-center justify-content-center">ML Models</a>
                     </div>
                     <div class="card-body">
-                        <p class="card-text custom-font-size">Manage your best performing models in your training pipelines</p>
+                        <p class="card-text custom-font">Manage your best performing models in your training pipelines</p>
                     </div>
                     <div class="card-mask"></div>
                 </div>
@@ -286,6 +286,12 @@
         font-size: 14px;
     }
 
+    .custom-font {
+        font-size: 16px;
+        color: black;
+        font-weight: 700;
+    }
+
     .jumbotron-custom {
         padding: 20px;
     }
@@ -328,7 +334,7 @@
     }
 
     .card-mask {
-        background: rgba(0, 0, 0, 0.5); /* Semi-transparent mask layer */
+        background: rgba(0, 128, 0, 0.15);
     }
 
     .container-fluid {

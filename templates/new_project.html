@@ -1,9 +1,8 @@
 {% load static %}
-
 <!DOCTYPE html>
 <!-- Created by CodingLab |www.youtube.com/CodingLabYT-->
 <html lang="en" dir="ltr">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <title>Hivetrain | ResearchLabs</title>
     <link rel="stylesheet" href="style.css" />
@@ -14,86 +13,95 @@
     <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-
-    {% comment %} <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
-    <link rel="stylesheet" href="{% static 'fa/css/all.min.css' %}" />
-    <script src="{% static 'js/bootstrap.min.js' %}"></script> {% endcomment %}
-    <title>{% block title %}MLOPs{% endblock %}</title>
     <!-- UniIcon CDN Link  -->
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-    <link
-      href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet"/>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter&display=swap">
-
-  
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  </head>
-  <body>
-<nav class="navbar nav2 navbar-expand-md bg-dark navbar-dark">
-    <a href="/" class="navbar-brand">
-        <i class="bx bx-log-out" id="log_out"></i></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbars">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="navbar-collapse collapse navbars" id="navbar2">
+</head>
+<body>
+
+<!-- Fixed Navbar -->
+<nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
+    <div class="row px-3 justify-content-center align-items-center">
+        <a href="../" class="navbar-brand">
+            <i class="bx bx-log-out" id="log_out"></i>
+        </a>
+        <h2 class="ml-2 mb-0 text-white">Project Name</h2>
+    </div>    
+    <div class="collapse navbar-collapse justify-content-end" id="navbar1">
+        <!-- Right-aligned items -->
         <ul class="navbar-nav">
-            <li class="nav-item active">
-                <a class="nav-link" href="#">Experiments</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Models</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Reports</a>
+            <li class="nav-item mx-2">
+                <img src="https://i.pinimg.com/originals/d5/b0/4c/d5b04cc3dcd8c17702549ebc5f1acf1a.png" alt="User Avatar" class="avatar">
             </li>
         </ul>
     </div>
 </nav>
+
+<!-- Scrollable Navbar -->
+<nav class="navbar nav2 navbar-expand-md bg-dark navbar-dark">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar2">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="navbar2">
+        <!-- Center-aligned items -->
+        <ul class="navbar-nav">
+            <li class="nav-item mb-2 mb-md-0">
+                <a class="nav-link" href="#" onclick="setActive(this)">Experiments</a>
+            </li>
+            <li class="nav-item mb-2 mb-md-0">
+                <a class="nav-link" href="#" onclick="setActive(this)">Models</a>
+            </li>
+            <li class="nav-item mb-2 mb-md-0">
+                <a class="nav-link" href="#" onclick="setActive(this)">Manage</a>
+            </li>
+            <li class="nav-item mb-2 mb-md-0">
+                <a class="nav-link" href="#" onclick="setActive(this)">Reports</a>
+            </li>
+        </ul>        
+    </div>
+</nav>
+
+
+<!-- Content Section -->
 <section class="home-section pb-20 mb-5">
-    
-    <div class="center-container container-fluid">
-        <img src="{% static 'images/exp.png' %}" alt="No projects available" width="500" height="500" class="img-fluid p-5">
-        <h6 class="font-weight-bold">This Project has no experiments</h6>
-        <div class="paragraph-wrapper text-center">
-            <p>Press create new experiment, to create your new machine learning project experiment</p>
-        </div>
-        <a id="myBtn2" class="btn article">Create New Project</a>
-        {% comment %} {% include 'modal.html' %} {% endcomment %}
-    </div>     
-    
+    {% block exp_block %}
+    {% endblock %}
 </section>
+
+<!-- Footer Section -->
 <div class="footer">
-  <div class="container">		
-    <div class="row text-center">						
-      <div class="col-lg-12 col-sm-12 col-xs-12">
-        <div class="footer_menu">
-          <ul>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Services</a></li>
-            <li><a href="#">About</a></li>
-            <li><a href="#">FAQs</a></li>
-          </ul>
-        </div>						
-        <div class="footer_copyright">
-          <p>© 2024 Hivetrain | ResearchLabs. All Rights Reserved.</p>
-        </div>	
-        <div class="footer_profile">
-          <ul>
-            <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-            <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-            <li><a href="#"><i class="fa fa-instagram"></i></a></li>
-            <li><a href="#"><i class="fa fa-pinterest"></i></a></li>
-          </ul>
-        </div>						
-      </div><!--- END COL -->							
-    </div><!--- END ROW -->					
-  </div><!--- END CONTAINER -->
+    <div class="container">        
+        <div class="row text-center">                        
+            <div class="col-lg-12 col-sm-12 col-xs-12">
+                <div class="footer_menu">
+                    <ul>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Services</a></li>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">FAQs</a></li>
+                    </ul>
+                </div>                      
+                <div class="footer_copyright">
+                    <p>© 2024 Hivetrain | ResearchLabs. All Rights Reserved.</p>
+                </div>  
+                <div class="footer_profile">
+                    <ul>
+                        <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                        <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                        <li><a href="#"><i class="fa fa-instagram"></i></a></li>
+                        <li><a href="#"><i class="fa fa-pinterest"></i></a></li>
+                    </ul>
+                </div>                      
+            </div><!--- END COL -->                           
+        </div><!--- END ROW -->                   
+    </div><!--- END CONTAINER -->
 </div>
+
 <style>
     /* Google Font Link */
     @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
@@ -107,17 +115,48 @@
     html, body {
       height: 100%;
     }
+
+    .navbar-nav .nav-item .nav-link.active {
+        text-decoration: underline;
+    }
+
+    .navbar-nav .nav-item {
+        margin-right: 25px; /* Adjust the spacing as needed */
+    }    
+    
+    .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        background-color: #fff;
+      }
+    
     .nav2 {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add box shadow */
-        margin-bottom: 20px; /* Add margin bottom */
+        position: fixed;
+        top: 56px; /* Adjust this value to match the height of your first navbar */
+        width: 100%;
+        z-index: 1000; /* Ensure it's above the first navbar */
+        background-color: #343a40; /* Adjust the background color as needed */
+        transition: top 0.3s; /* Add transition for smooth effect */
+    }
+
+    .navbar-nav {
+        display: flex;
+        flex-direction: row-reverse; /* Align items from right to left */
     }
     
+
+    .navbar-nav.ml-auto {
+        margin-left: auto;
+    }
+
     .home-section {
       position: relative;
       background: #fff;
       min-height: 100vh;
       top: 0;
-      padding-top: 80px; /* Adjust this value to account for the fixed navbar */
+      padding-top: 200px; /* Adjust this value to account for both navbars */
       transition: all 0.5s ease;
       z-index: 2;
     }
@@ -242,9 +281,36 @@
       color: #fff;
     }
 </style>
-<script src="js/jquery-3.3.1.min.js"></script>
-<script src="js/popper.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/main.js"></script>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var collapseElementList = [].slice.call(document.querySelectorAll('.collapse'));
+        var collapseList = collapseElementList.map(function(collapseEl) {
+            return new bootstrap.Collapse(collapseEl);
+        });
+    });
+    
+    function setActive(element) {
+        // Remove active class from all nav links
+        document.querySelectorAll('.nav-link').forEach(function(link) {
+            link.classList.remove('active');
+        });
+        
+        // Add active class to clicked link
+        element.classList.add('active');
+    }
+
+    window.onscroll = function() {scrollFunction()};
+
+    function scrollFunction() {
+      if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
+        document.querySelector(".nav2").style.top = "0";
+      } else {
+        document.querySelector(".nav2").style.top = "56px";
+      }
+    }
+</script>
+
 </body>
 </html>
