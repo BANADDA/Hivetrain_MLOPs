@@ -47,7 +47,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'console',
+    "crispy_forms",
+    "crispy_bootstrap4",
 ]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
+CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -85,16 +90,16 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config( default='postgres://hive_db_user:6Vilio8GOgv7FgtT0xgJCAzaEp2AKd58@dpg-cnnsbjn109ks73cgbsgg-a.oregon-postgres.render.com/hive_db', conn_max_age=600)}
-
-
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
+#     'default': dj_database_url.config( default='postgres://hive_db_user:6Vilio8GOgv7FgtT0xgJCAzaEp2AKd58@dpg-cnnsbjn109ks73cgbsgg-a.oregon-postgres.render.com/hive_db', conn_max_age=600)}
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
 
 
 # Password validation

@@ -1,13 +1,13 @@
 {% extends 'projects.html' %}
 {% block project_button %}
-<a id="myBtn" class="btn article">Create New Project</a>
+<a href="{% url 'create_project' %}" class="btn article">Create New Project</a>
 {% endblock %}
 {% block inner_content %}
 
 
 
-<div class="table-responsive custom-table-responsive">
-    {% if rows %}
+{% comment %} <div class="table-responsive custom-table-responsive"> {% endcomment %}
+    {% if projects %}
     <table class="table custom-table">
         <thead>
             <tr>
@@ -17,30 +17,27 @@
                         <div class="control__indicator"></div>
                     </label>
                 </th>
-                
                 <th scope="col">ID</th>
                 <th scope="col">Project Name</th>
-                <th scope="col">Model Type </th>
                 <th scope="col">Status</th>
                 <th scope="col">Create</th>
                 <th scope="col">Last Updated</th>
             </tr>
         </thead>
         <tbody>
-            {% for row in rows %}
-            <tr scope="row">
+            {% for project in projects %}
+            <tr scope="row" class="hover-effect">
                 <th scope="row">
                     <label class="control control--checkbox">
                         <input type="checkbox"/>
                         <div class="control__indicator"></div>
                     </label>
                 </th>
-                <td><a href="{% url 'project_detail' project_id=row.id %}">{{ row.id }}</a></td>
-                <td><a href="{% url 'project_detail' project_name=row.name %}">{{ row.name }}</a></td>
-                <td>{{ row.model_type }}</td>
-                <td>{{ row.status }}</td>
-                <td>{{ row.create_date }}</td>
-                <td>{{ row.last_updated }}</td>
+                <td><a href="#">{{ project.id }}</a></td>
+                <td><a href="#">{{ project.project_name }}</a></td>
+                <td>{{ project.status }}</td>
+                <td>{{ project.create_date }}</td>
+                <td>{{ project.last_updated }}</td>
             </tr>
             <tr class="spacer"><td colspan="100"></td></tr>
             {% endfor %}
@@ -51,162 +48,22 @@
         <img src="https://cdni.iconscout.com/illustration/premium/thumb/male-web-developer-doing-research-on-development-5691622-4759504.png" alt="No projects available" width="350" height="350" class="img-fluid">
         <h6 class="font-weight-bold">No projects available</h6>
         <div class="paragraph-wrapper">
-        <p>To create your new machine learning project, press the create project button on top of the screen</p>
+            <p>To create your new machine learning project, press the create project button on top of the screen</p>
         </div>
         <div class="pb-5">
-        <a id="myBtn2" class="btn article">Create New Project</a>
+            <a href="{% url 'create_project' %}" class="btn article">Create New Project</a>
         </div>
-        {% comment %} {% include 'modal.html' %} {% endcomment %}
     </div>
-    <!-- The Modal -->
-<div id="myModal" class="modal">
-    
-  <!-- Modal content -->
- <div class="modal-content">
-  {% comment %} <span class="close">&times;</span> {% endcomment %}
-  <p class="modal-text">To get started, provide the project name and description</p>
-  <hr class="line">
-  <div class="container">
-    <form id="projectForm" class="needs-validation" action="{% url 'new_project' %}" method="POST" novalidate>
-        {% csrf_token %}
-    
-        <div class="form-group"></div>
-    
-        <div class="form-group">
-            <label for="projectName">Enter project name</label>
-            <input type="text" class="form-control" id="projectName" name="projectName" aria-describedby="nameHelp" placeholder="Project name" required>
-            <div class="invalid-feedback">Please provide a valid project name.</div>
-            <small id="nameHelp" class="form-text text-muted">Project name should be unique and easy to remember.</small>
-        </div>
-    
-        <div class="form-group">
-            <label for="projectDetails">Enter project details</label>
-            <input type="text" class="form-control" id="projectDetails" name="projectDetails" placeholder="Project details" required>
-            <div class="invalid-feedback">Please provide project details.</div>
-        </div>
-    
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
-            <label class="form-check-label" for="terms">I accept the <a href="#terms1">terms</a> and <a href="#conditions">conditions</a></label>
-            <div class="invalid-feedback">You must accept the terms and conditions.</div>
-        </div>
-    
-        <hr class="line">
-    
-        <div style="text-align: right;">
-            <button type="button" class="btn btn-secondary mr-2" onclick="closeModal()">Cancel</button>
-            <button type="submit" class="btn article">Continue</button>
-        </div>
-    
-    </form>
-  </div>
-</div>
-
-</div>
-
     {% endif %}
-</div>
-<script>
-    // Get the button that opens the modal
-var btn2 = document.getElementById("myBtn2");
-
-// When the user clicks the button, open the modal 
-btn2.onclick = function () {
-    modal.style.display = "block";
-}
-    // Function to clear form fields
-    function clearForm() {
-        document.getElementById("projectForm").reset();
-    }
-
-    // Validate form on submit
-    document.getElementById("projectForm").addEventListener("submit", function (event) {
-        if (!this.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-        } else {
-            // Add event listener to clear form after navigation
-            window.addEventListener("beforeunload", clearForm);
-        }
-        this.classList.add("was-validated");
-    }, false);
-
-    function closeModal() {
-        var modal = document.getElementById("myModal");
-        modal.style.display = "none";
-    }
-
-    // Get the modal
-    var modal = document.getElementById("myModal");
-
-    // Get the button that opens the modal
-    var btn = document.getElementById("myBtn");
-
-    // When the user clicks the button, open the modal 
-    btn.onclick = function () {
-        modal.style.display = "block";
-    }
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function (event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-
-    // Validate form on submit
-    document.getElementById("projectForm").addEventListener("submit", function (event) {
-        if (!this.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-        } else {
-            // If form is valid, navigate to new project page
-            window.location.href = "{% url 'new_project' %}";
-        }
-        this.classList.add("was-validated");
-    }, false);
-  function closeModal() {
-      var modal = document.getElementById("myModal");
-      modal.style.display = "none";
-  }
-
-  // Get the modal
-  var modal = document.getElementById("myModal");
-
-  // Get the button that opens the modal
-  var btn = document.getElementById("myBtn");
-
-  // Get the <span> element that closes the modal
-  var span = document.getElementsByClassName("close")[0];
-
-  // When the user clicks the button, open the modal 
-  btn.onclick = function () {
-      modal.style.display = "block";
-  }
-
-  // When the user clicks on <span> (x), close the modal
-  span.onclick = function () {
-      modal.style.display = "none";
-  }
-
-  // When the user clicks anywhere outside of the modal, close it
-  window.onclick = function (event) {
-      if (event.target == modal) {
-          modal.style.display = "none";
-      }
-  }
-
-  // Validate form on submit
-  document.getElementById("projectForm").addEventListener("submit", function (event) {
-      if (!this.checkValidity()) {
-          event.preventDefault();
-          event.stopPropagation();
-      }
-      this.classList.add("was-validated");
-  }, false);
-</script>
+{% comment %} </div> {% endcomment %}
 
 <style>
+    .hover-effect:hover {
+        box-shadow: 8px 8px 8px green;
+        transform: scale(1.2);
+        transition: box-shadow 0.3s ease, transform 0.3s ease; 
+    }
+
     .center-container {
     display: flex;
     flex-direction: column;
