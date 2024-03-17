@@ -1,0 +1,17 @@
+{% extends 'new_project.html' %}
+{% load static %}
+
+{% block project_name %}
+    {{ project.project_name }}
+{% endblock %}
+
+{% block exp_block %}
+    <div class="center-container container-fluid">
+        <h2>Create New Experiment</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+{% endblock %}

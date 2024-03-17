@@ -28,12 +28,25 @@ class ProjectForm(forms.ModelForm):
             'description',
             'status',
         )
-
-
 class ExperimentForm(forms.ModelForm):
     class Meta:
         model = Experiment
-        fields = ['name', 'description', 'dataset']  # Add any additional fields as needed
+        fields = ['name', 'description', 'dataset']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('submit', 'Create Experiment'))
+        self.helper.layout = Layout(
+            'name',
+            'description',
+            'dataset',
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['dataset'].queryset = Dataset.objects.all()
 
 class ModelForm(forms.ModelForm):
     class Meta:

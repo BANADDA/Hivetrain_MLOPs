@@ -27,13 +27,10 @@ def projects(request):
 def new_project(request):
     return render(request, 'exps/no_exp.html')
 
-def project_detail(request, project_id=None, project_name=None):
-    project = None
-    if project_id:
-        project = get_object_or_404(Project, id=project_id)
-    elif project_name:
-        project = get_object_or_404(Project, name=project_name)
-    return render(request, 'project_detail.html', {'project': project})
+def project_detail(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    experiments = Experiment.objects.filter(project=project)
+    return render(request, 'exps/exp.html', {'project': project, 'experiments': experiments})
 
 def upload(request):
     if request.method == 'POST' and request.FILES.get('file'):
@@ -83,14 +80,22 @@ def create_project(request):
     return render(request, 'projects/create_project.html', {'form': form})
 
 def create_experiment(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    
     if request.method == 'POST':
-        form = ExperimentForm(request.POST)
+        # Initialize the form with both POST data and project_id
+        form = ExperimentForm(request.POST, initial={'project': project_id})
         if form.is_valid():
-            form.save()
-            return redirect('experiments', project_id=project_id)  # Redirect to experiments list page for the project
+            # Save the form with the project_id
+            experiment = form.save(commit=False)
+            experiment.project_id = project_id  # Associate experiment with project
+            experiment.save()
+            return redirect('project_detail', project_id=project_id)
     else:
-        form = ExperimentForm()
-    return render(request, 'create_experiment.html', {'form': form})
+        # Initialize the form with the project_id in the initial data
+        form = ExperimentForm(initial={'project': project_id})
+
+    return render(request, 'exps/create_experiment.html', {'form': form, 'project': project})
 
 def create_model(request, experiment_id):
     if request.method == 'POST':

@@ -27,10 +27,13 @@
 <!-- Fixed Navbar -->
 <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
     <div class="row px-3 justify-content-center align-items-center">
-        <a href="../" class="navbar-brand">
-            <i class="bx bx-log-out" id="log_out"></i>
-        </a>
-        <h2 class="ml-2 mb-0 text-white">Project Name</h2>
+      <a href="#" class="navbar-brand" onclick="goBack()">
+        <i class="bx bx-log-out"></i>
+    </a>    
+        <h2 class="ml-2 mb-0 text-white">
+          {% block project_name %}
+          {% endblock %}
+        </h2>
     </div>    
     <div class="collapse navbar-collapse justify-content-end" id="navbar1">
         <!-- Right-aligned items -->
@@ -283,6 +286,10 @@
 </style>
 
 <script>
+ 
+    function goBack() {
+      window.history.back();
+    }
 
     document.addEventListener('DOMContentLoaded', function() {
         var collapseElementList = [].slice.call(document.querySelectorAll('.collapse'));

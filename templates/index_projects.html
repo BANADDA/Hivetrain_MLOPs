@@ -1,158 +1,116 @@
 {% extends 'projects.html' %}
+{% load static %}
+
 {% block project_button %}
 <a href="{% url 'create_project' %}" class="btn article">Create New Project</a>
 {% endblock %}
+
 {% block inner_content %}
-
-
-
-{% comment %} <div class="table-responsive custom-table-responsive"> {% endcomment %}
-    {% if projects %}
-    <table class="table custom-table">
-        <thead>
-            <tr>
-                <th scope="col">
-                    <label class="control control--checkbox">
-                        <input type="checkbox" class="js-check-all"/>
-                        <div class="control__indicator"></div>
-                    </label>
-                </th>
-                <th scope="col">ID</th>
-                <th scope="col">Project Name</th>
-                <th scope="col">Status</th>
-                <th scope="col">Create</th>
-                <th scope="col">Last Updated</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for project in projects %}
-            <tr scope="row" class="hover-effect">
-                <th scope="row">
-                    <label class="control control--checkbox">
-                        <input type="checkbox"/>
-                        <div class="control__indicator"></div>
-                    </label>
-                </th>
-                <td><a href="#">{{ project.id }}</a></td>
-                <td><a href="#">{{ project.project_name }}</a></td>
-                <td>{{ project.status }}</td>
-                <td>{{ project.create_date }}</td>
-                <td>{{ project.last_updated }}</td>
-            </tr>
-            <tr class="spacer"><td colspan="100"></td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <div class="center-container bg-white">
-        <img src="https://cdni.iconscout.com/illustration/premium/thumb/male-web-developer-doing-research-on-development-5691622-4759504.png" alt="No projects available" width="350" height="350" class="img-fluid">
-        <h6 class="font-weight-bold">No projects available</h6>
-        <div class="paragraph-wrapper">
-            <p>To create your new machine learning project, press the create project button on top of the screen</p>
-        </div>
-        <div class="pb-5">
-            <a href="{% url 'create_project' %}" class="btn article">Create New Project</a>
-        </div>
+{% comment %}
+<div class="table-responsive custom-table-responsive">
+{% endcomment %}
+{% if projects %}
+<table class="table custom-table">
+    <thead>
+        <tr>
+            <th scope="col">
+                <label class="control control--checkbox">
+                    <input type="checkbox" class="js-check-all"/>
+                    <div class="control__indicator"></div>
+                </label>
+            </th>
+            <th scope="col">ID</th>
+            <th scope="col">Project Name</th>
+            <th scope="col">Status</th>
+            <th scope="col">Create</th>
+            <th scope="col">Last Updated</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for project in projects %}
+        <tr scope="row" class="hover-effect" onclick="window.location='{% url 'project_detail' project.id %}'" style="cursor: pointer;">
+            <th scope="row">
+                <label class="control control--checkbox">
+                    <input type="checkbox"/>
+                    <div class="control__indicator"></div>
+                </label>
+            </th>
+            <td><a href="#">{{ project.id }}</a></td>
+            <td><a href="#">{{ project.project_name }}</a></td>
+            <td>{{ project.status }}</td>
+            <td>{{ project.create_date }}</td>
+            <td>{{ project.last_updated }}</td>
+        </tr>
+        <tr class="spacer"><td colspan="100"></td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="center-container bg-white">
+    <img src="https://cdni.iconscout.com/illustration/premium/thumb/male-web-developer-doing-research-on-development-5691622-4759504.png" alt="No projects available" width="350" height="350" class="img-fluid">
+    <h6 class="font-weight-bold">No projects available</h6>
+    <div class="paragraph-wrapper">
+        <p>To create your new machine learning project, press the create project button on top of the screen</p>
     </div>
-    {% endif %}
-{% comment %} </div> {% endcomment %}
+    <div class="pb-5">
+        <a href="{% url 'create_project' %}" class="btn article">Create New Project</a>
+    </div>
+</div>
+{% endif %}
+{% comment %}
+</div>
+{% endcomment %}
 
 <style>
-    .hover-effect:hover {
-        box-shadow: 8px 8px 8px green;
-        transform: scale(1.2);
-        transition: box-shadow 0.3s ease, transform 0.3s ease; 
+/* Add this CSS to make the table responsive */
+@media (max-width: 768px) {
+    .table-responsive {
+        overflow-x: auto;
     }
+}
 
-    .center-container {
+/* Add this CSS to adjust table columns and font size based on screen size */
+@media (max-width: 576px) {
+    .table th,
+    .table td {
+        font-size: 12px;
+    }
+}
+
+/* Add hover effect styles */
+.hover-effect:hover {
+    box-shadow: 8px 8px 8px green;
+    transform: scale(1.2);
+    transition: box-shadow 0.3s ease, transform 0.3s ease; 
+}
+
+/* Add styles for center container */
+.center-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 60vh;
-    padding: 35px; /* Add padding */
-    border-radius: 10px; /* Add border radius */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add box shadow */
-    margin-bottom: 20px; /* Add margin bottom */
+    padding: 35px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
 }
 
 .center-container h6 {
-    margin-bottom: 10px; /* Add margin bottom to the heading */
+    margin-bottom: 10px;
 }
 
 .paragraph-wrapper {
-    font-size: 18px; /* Adjust font size */
+    font-size: 18px;
     font-weight: 800;
-    color: #020202; /* Adjust color */
-    margin-bottom: 10px; /* Add margin bottom */
+    color: #020202;
+    margin-bottom: 10px;
     color: var(--gray-6);
     line-height: 1.5;
     max-width: 450px;
     text-align: center;
     margin-bottom: 10px;
 }
-
-  /* The line */
-  .line {
-      border: none;
-      height: 1px;
-      background-color: #080808; /* Color of the line */
-      width: 100%;
-  }
-  .modal-text {
-    margin: 0;
-    color: #2A2929;
-    font-weight: bold;
-    font-size: 14px;
-} 
-    .center-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 60vh;
-    }
-        
-        /* The Modal (background) */
-        .modal {
-          display: none; /* Hidden by default */
-          position: fixed; /* Stay in place */
-          z-index: 1; /* Sit on top */
-          padding-top: 100px; /* Location of the box */
-          left: 0;
-          top: 0;
-          width: 100%; /* Full width */
-          height: 100%; /* Full height */
-          overflow: auto; /* Enable scroll if needed */
-          background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
-        }
-        
-        /* Modal Content */
-        .modal-content {
-          background-color: #fefefe;
-          margin: auto;
-          padding: 20px;
-          border: 1px solid #888;
-          width: 40%;
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-        }
-        
-        /* The Close Button */
-        .close {
-          color: #090909;
-          float: right;
-          font-size: 28px;
-          font-weight: bold;
-        }
-        
-        .close:hover,
-        .close:focus {
-          color: #000;
-          text-decoration: none;
-          cursor: pointer;
-        }
 </style>
 {% endblock %}
+ 

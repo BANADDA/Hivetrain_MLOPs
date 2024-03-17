@@ -1,0 +1,25 @@
+{% extends 'new_project.html' %}
+{% load static %}
+
+{% block project_name %}
+    {{ project.project_name }}
+{% endblock %}
+
+{% block exp_block %}
+{% if experiments %}
+    <!-- Display experiments here -->
+    <!-- You can iterate over the experiments and display them as needed -->
+    {% for experiment in experiments %}
+        <!-- Display experiment details -->
+    {% endfor %}
+{% else %}
+    <div class="center-container container-fluid">
+        <img src="{% static 'images/exp.png' %}" alt="No projects available" width="500" height="500" class="img-fluid p-5">
+        <h6 class="font-weight-bold">Project {{ project.project_name }} has no experiments</h6>
+        <div class="paragraph-wrapper text-center">
+            <p>Press new experiment to create a new machine learning experiment for this project</p>
+        </div>
+        <a href="{% url 'create_experiment' project_id=project.id %}" class="btn article">New Experiment</a>
+    </div>
+{% endif %}
+{% endblock %}

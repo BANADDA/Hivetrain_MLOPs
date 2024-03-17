@@ -1,0 +1,16 @@
+<!-- project_detail.html -->
+{% extends 'projects.html' %}
+
+{% block inner_content %}
+    {% block title %}
+        {{ project.project_name }} Detail
+    {% endblock %}
+
+    {% block content %}
+        <h1>{{ project.project_name }} Detail</h1>
+
+        <!-- Display project details -->
+        <p>ID: {{ project.id }}</p>
+        <p>Status: {{ project.status }}</p>
+    {% endblock %}
+{% endblock %}
