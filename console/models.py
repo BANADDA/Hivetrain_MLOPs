@@ -31,11 +31,19 @@ class Experiment(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('stopped', 'Stopped'),
+    ]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
+
+    def __str__(self):
+        return self.name
 class Model(models.Model):
     id = models.BigAutoField(primary_key=True)
     experiment = models.OneToOneField(Experiment, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    parameters = models.JSONField()  # Storing parameters as JSON
+    parameters = models.JSONField()
 
 class TrainingJob(models.Model):
     id = models.BigAutoField(primary_key=True)

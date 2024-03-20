@@ -6,7 +6,7 @@
 {% block exp_block %} 
 {% if experiments%}
 <div class="container">
-    <div class="container p-3 card bg-white rounded shadow mb-3">
+    <div class="container p-3 card bg-white rounded mb-5">
       <div class="row justify-content-between align-content-between card-body">
         <div class="col-md">
           <h2 class="font-weight-bold text-black fs-1">
@@ -18,7 +18,7 @@
             </p>
           </div>
           <a href="{% url 'create_experiment' project_id=project.id %}" class="btn article">
-            <i class='bx bx-plus'></i> New Experiment
+            <i class='bx bx-plus' href="{% url 'create_experiment' project_id=project.id %}"></i> New Experiment
           </a>
         </div>
         <div class="col-md-auto d-flex justify-content-end">
@@ -34,17 +34,42 @@
         </form>
     </div>
   </div>
-  <div class="card" style="width: 18rem; height: 10rem;">
-    <img class="card-img-top" src="..." alt="Card image cap">
-    <div class="card-body">
-      <h5 class="card-title">Card title</h5>
-      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-      <a href="#" class="btn btn-primary">Go somewhere</a>
+  
+  <div class="d-flex justify-content-end mb-5">
+    <div class="btn-group" id="btnGroup" role="group">
+        <button type="button" class="btn btn-outline-dark active" data-filter="all">All</button>
+        <button type="button" class="btn btn-outline-dark" data-filter="active">Active</button>
+        <button type="button" class="btn btn-outline-dark" data-filter="stopped">Stopped</button>
     </div>
-  </div>
-{% for experiment in experiments %}
-<!-- Display experiment details -->
-{% endfor %} {% else %}
+</div>
+
+  {% comment %} <div class="container"> {% endcomment %}
+    <div class="row">
+        {% for experiment in experiments %}
+        <div class="col-md-3 mb-4 experiment-card" data-status="{{ experiment.status }}">
+            <div class="card card-exp">
+                <img class="card-img-top mh-100" src="{{ experiment.random_image_url }}" alt="Card image cap">
+                <div class="card-body" style="max-height: 150px; overflow: hidden;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="card-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0;">{{ experiment.name }}</h5>
+                        <p class="status" style="color: {% if experiment.status == 'active' %}darkgreen{% else %}darkred{% endif %}; font-weight: bold; margin-bottom: 0;">{{ experiment.get_status_display }}</p>
+                    </div>
+                    <div class="card-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <p class="dataset">{{ experiment.dataset.file_name|slice:'-3' }}</p>
+                        {% comment %} <p>{{ experiment.description }}</p> {% endcomment %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if forloop.counter|divisibleby:4 and not forloop.last %}
+    </div>
+    <div class="row"> <!-- Start a new row after every 4 experiments -->
+        {% endif %}
+        {% endfor %}
+    </div>      
+  {% comment %} </div> {% endcomment %}
+  
+{% else %}
 <div class="center-container container-fluid">
   <img
     src="{% static 'images/exp.png' %}"
@@ -68,4 +93,121 @@
     >New Experiment</a
   >
 </div>
-{% endif %} {% endblock %}
+{% endif %} 
+<style>
+    .btn-outline-dark {
+        width: 120px; /* Adjust width as needed */
+    }
+
+    .card-img-top {
+        width: 100%;
+        height: 6vw;
+        object-fit: cover;
+    }
+
+    .card-title {
+        font-size: 15px;
+        font-weight: bold;
+    }
+
+    .card-exp {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow */
+    }
+
+    .card-exp:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+    }
+
+    .dataset {
+        color: black;
+        font-weight: 400;
+        font-size: 12px;
+    }
+</style>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const buttons = document.querySelectorAll("#btnGroup button");
+
+        buttons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                const filter = this.getAttribute("data-filter");
+                const cards = document.querySelectorAll(".experiment-card");
+
+                cards.forEach(function (card) {
+                    if (filter === "all") {
+                        card.style.display = "block";
+                    } else {
+                        const status = card.getAttribute("data-status");
+                        if (status === filter) {
+                            card.style.display = "block";
+                        } else {
+                            card.style.display = "none";
+                        }
+                    }
+                });
+
+                buttons.forEach(function (btn) {
+                    btn.classList.remove("active");
+                });
+
+                this.classList.add("active");
+            });
+        });
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const buttons = document.querySelectorAll("#btnGroup button");
+
+        buttons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                filterCards(this.getAttribute("data-filter"));
+                toggleActiveButton(buttons, this);
+            });
+        });
+
+        const searchInput = document.querySelector(".form-control");
+        searchInput.addEventListener("input", function () {
+            const searchTerm = this.value.trim().toLowerCase();
+            const cards = document.querySelectorAll(".experiment-card");
+
+            cards.forEach(function (card) {
+                const experimentName = card.querySelector(".card-title").textContent.trim().toLowerCase();
+                if (experimentName.includes(searchTerm)) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        });
+    });
+
+    function filterCards(filter) {
+        const cards = document.querySelectorAll(".experiment-card");
+
+        cards.forEach(function (card) {
+            if (filter === "all") {
+                card.style.display = "block";
+            } else {
+                const status = card.getAttribute("data-status");
+                if (status === filter) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
+            }
+        });
+    }
+
+    function toggleActiveButton(buttons, activeButton) {
+        buttons.forEach(function (button) {
+            button.classList.remove("active");
+        });
+        activeButton.classList.add("active");
+    }
+</script>
+
+
+{% endblock %}

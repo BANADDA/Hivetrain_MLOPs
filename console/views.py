@@ -1,3 +1,4 @@
+import random
 from datetime import timezone
 
 from django.contrib import messages
@@ -30,6 +31,14 @@ def new_project(request):
 def project_detail(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     experiments = Experiment.objects.filter(project=project)
+    image_urls = [
+        'https://i.pinimg.com/originals/d5/b0/4c/d5b04cc3dcd8c17702549ebc5f1acf1a.png',
+        'https://optimine.com/wp-content/uploads/2023/04/how-to-learn-big-data-7-places-to-start-in-2022.jpg',
+        'https://www.simplilearn.com/ice9/free_resources_article_thumb/data_analyticstrendsmin.jpg',
+        'https://www.datamation.com/wp-content/uploads/2023/08/dm08172023-what-is-data-analytics-768x502.png'
+    ]
+    for experiment in experiments:
+        experiment.random_image_url = random.choice(image_urls)
     return render(request, 'exps/exp.html', {'project': project, 'experiments': experiments})
 
 def upload(request):
