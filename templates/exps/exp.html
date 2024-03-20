@@ -1,25 +1,71 @@
-{% extends 'new_project.html' %}
-{% load static %}
-
+{% extends 'new_project.html' %} 
+{% load static %} 
 {% block project_name %}
-    {{ project.project_name }}
-{% endblock %}
-
-{% block exp_block %}
-{% if experiments %}
-    <!-- Display experiments here -->
-    <!-- You can iterate over the experiments and display them as needed -->
-    {% for experiment in experiments %}
-        <!-- Display experiment details -->
-    {% endfor %}
-{% else %}
-    <div class="center-container container-fluid">
-        <img src="{% static 'images/exp.png' %}" alt="No projects available" width="500" height="500" class="img-fluid p-5">
-        <h6 class="font-weight-bold">Project {{ project.project_name }} has no experiments</h6>
-        <div class="paragraph-wrapper text-center">
-            <p>Press new experiment to create a new machine learning experiment for this project</p>
+{{project.project_name }} 
+{% endblock %} 
+{% block exp_block %} 
+{% if experiments%}
+<div class="container">
+    <div class="container p-3 card bg-white rounded shadow mb-3">
+      <div class="row justify-content-between align-content-between card-body">
+        <div class="col-md">
+          <h2 class="font-weight-bold text-black fs-1">
+            {{project.project_name}}
+          </h2>
+          <div class="d-md-flex flex-wrap">
+            <p class="text-break mb-md-3 mr-md-3" style="max-width: calc(100% - 150px);">
+              {% comment %} {{project.description }} {% endcomment %} Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio, possimus voluptatibus! Obcaecati architecto veniam vel, similique maxime excepturi quidem rem eaque consequatur dolorem! Quod ullam ad illum doloremque, eius nesciunt!
+            </p>
+          </div>
+          <a href="{% url 'create_experiment' project_id=project.id %}" class="btn article">
+            <i class='bx bx-plus'></i> New Experiment
+          </a>
         </div>
-        <a href="{% url 'create_experiment' project_id=project.id %}" class="btn article">New Experiment</a>
+        <div class="col-md-auto d-flex justify-content-end">
+          <img src="https://www.kdnuggets.com/wp-content/uploads/wijaya_top_machine_learning_papers_read_2023_1.jpg" alt="Image Description" class="img-fluid d-none d-md-inline-block" style="max-width: 300px; max-height: 300px;">
+        </div>
+      </div>
+        <form action="">  
+          <div class="input-group mb-4">  
+            <input type="search" placeholder="Search here..." aria-describedby="button-addon5" class="form-control">  
+            <div class="input-group-append">  
+              <a id="button-addon5" type="submit" class="btn article"> <i class="fa fa-search"> </i> </a>  
+            </div> 
+        </form>
     </div>
-{% endif %}
-{% endblock %}
+  </div>
+  <div class="card" style="width: 18rem; height: 10rem;">
+    <img class="card-img-top" src="..." alt="Card image cap">
+    <div class="card-body">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+      <a href="#" class="btn btn-primary">Go somewhere</a>
+    </div>
+  </div>
+{% for experiment in experiments %}
+<!-- Display experiment details -->
+{% endfor %} {% else %}
+<div class="center-container container-fluid">
+  <img
+    src="{% static 'images/exp.png' %}"
+    alt="No projects available"
+    width="500"
+    height="500"
+    class="img-fluid p-5"
+  />
+  <h6 class="font-weight-bold">
+    Project {{ project.project_name }} has no experiments
+  </h6>
+  <div class="paragraph-wrapper text-center">
+    <p>
+      Press new experiment to create a new machine learning experiment for this
+      project
+    </p>
+  </div>
+  <a
+    href="{% url 'create_experiment' project_id=project.id %}"
+    class="btn article"
+    >New Experiment</a
+  >
+</div>
+{% endif %} {% endblock %}
