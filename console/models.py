@@ -7,30 +7,29 @@ class Dataset(models.Model):
     file_name = models.CharField(max_length=100)
     upload_date = models.DateTimeField(auto_now_add=True)
     
-class Project(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
-    project_name = models.CharField(max_length=100)
-    description = models.TextField(default=None, blank=True, null=True)
-    status = models.CharField(max_length=100)
-    create_date = models.DateTimeField(auto_now_add=True)
-    last_updated = models.DateTimeField(auto_now=True)
+# class Project(models.Model):
+#     id = models.CharField(max_length=10, primary_key=True)
+#     project_name = models.CharField(max_length=100)
+#     description = models.TextField(default=None, blank=True, null=True)
+#     status = models.CharField(max_length=100)
+#     create_date = models.DateTimeField(auto_now_add=True)
+#     last_updated = models.DateTimeField(auto_now=True)
 
-    def save(self, *args, **kwargs):
-        if not self.id:
-            last_project = Project.objects.order_by('-id').first()
-            if last_project:
-                last_id = int(last_project.id[2:])  
-                self.id = 'UP{:04d}'.format(last_id + 1) 
-            else:
-                self.id = 'UP0001'  
-        super().save(*args, **kwargs)
+#     def save(self, *args, **kwargs):
+#         if not self.id:
+#             last_project = Project.objects.order_by('-id').first()
+#             if last_project:
+#                 last_id = int(last_project.id[2:])  
+#                 self.id = 'UP{:04d}'.format(last_id + 1) 
+#             else:
+#                 self.id = 'UP0001'  
+#         super().save(*args, **kwargs)
 
 class Experiment(models.Model):
     id = models.BigAutoField(primary_key=True)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    # project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.TextField()
-    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
     STATUS_CHOICES = [
         ('active', 'Active'),
         ('stopped', 'Stopped'),
@@ -42,8 +41,10 @@ class Experiment(models.Model):
 class Model(models.Model):
     id = models.BigAutoField(primary_key=True)
     experiment = models.OneToOneField(Experiment, on_delete=models.CASCADE)
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=100)
-    parameters = models.JSONField()
+    domain = models.CharField(max_length=250, null=True) 
+    # parameters = models.JSONField()
 
 class TrainingJob(models.Model):
     id = models.BigAutoField(primary_key=True)

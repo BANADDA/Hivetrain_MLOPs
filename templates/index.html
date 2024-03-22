@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}
     MLOPs
@@ -22,37 +23,23 @@
 <div class="container">
 <div class="container d-flex align-items-center justify-content-center">
     <div class="row">
-        <div class="col-sm-6 mb-4"> 
-            <div class="card  mr-5" style="width: 25rem;">
-                <div class="card-inner">
-                    <img class="card-img-top px-2" src="https://www.researchgate.net/profile/Matthieu-Guillaumin/publication/261182364/figure/fig2/AS:282180778512402@1444288548970/Image-segmentation-examples-from-Stanford-background-dataset-for-pairwise-non-linear.png"
-                        alt="Card image cap">
-                    <div class="additional-content">
-                        <a href="{% url 'datasets' %}" class="btn article d-flex align-items-center justify-content-center">View Datasets</a>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text custom-font">Explore and manage existing datasets to enhance your model training</p>
-                    </div>
-                    <div class="card-mask"></div>
+        <div class="col-sm-6 mb-4">
+            <div class="card text-center transparent-card" style="width: 25rem;">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <img src="{% static 'images/dataset.png' %}" class="card-img-top mx-auto pb-1" alt="Card Image" style="max-width: 200px;">
+                    <a href="{% url 'datasets' %}" class="btn article mt-auto elevated-btn">Datasets</a>
                 </div>
             </div>
         </div>
-        <div class="col-sm-6 mb-4"> 
-            <div class="card" style="width: 25rem;">
-                <div class="card-inner">
-                    <img class="card-img-top" src="https://i0.wp.com/eos.org/wp-content/uploads/2020/07/data-streams-eos-august.png?fit=820%2C615&ssl=1"
-                        alt="Card image cap">
-                    <div class="additional-content">
-                        <a href="{% url 'projects' %}" class="btn article d-flex align-items-center justify-content-center">ML Models</a>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text custom-font">Manage your best performing models in your training pipelines</p>
-                    </div>
-                    <div class="card-mask"></div>
+        <div class="col-sm-6 mb-4">
+            <div class="card text-center transparent-card" style="width: 25rem;">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <img src="{% static 'images/model.png' %}" class="card-img-top mx-auto pb-1" alt="Card Image" style="max-width: 200px;">
+                    <a href="{% url 'experiments' %}" class="btn article mt-auto elevated-btn">Models</a>
                 </div>
             </div>
         </div>
-    </div>
+    </div>       
 </div>
 
 <div class="container d-flex align-items-center justify-content-center">
@@ -102,7 +89,7 @@
             </div>
         </div>
         
-        <div class="container p-2">
+        {% comment %} <div class="container p-2">
             <div class="card">
                 <div class="card-header">
                     <div class="row align-items-center justify-content-between">
@@ -160,7 +147,7 @@
                 </div>
                 
             </div>
-        </div>
+        </div> {% endcomment %}
         
         
     </div>
@@ -248,6 +235,24 @@
 
 
 <style>
+    .transparent-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+    }
+
+    .elevated-btn {
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .transparent-card {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow */
+        border: 2px solid transparent; /* Default border size and color */
+        background-color: rgba(255, 255, 255, 0.4); /* Adjust the alpha value (0.9) to control transparency */
+        border: none; /* Optional: remove border for a cleaner look */
+    }
+    
+    
     
    table {
      width: 100%; /* Ensure table takes up full width */

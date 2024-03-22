@@ -1,0 +1,606 @@
+{% extends 'new_project.html' %}
+{% load static %}
+
+{% block exp_name %}
+{{experiment.name}}
+{% endblock %}
+
+{% block exp_block %}
+<div class="container">
+    <div id="validationAlerts"></div>
+    <div class="container card bg-white rounded mb-5">
+        <div class="row justify-content-between align-content-between card-body">
+          <div class="col-md">
+            <h2 class="font-weight-bold text-black fs-1">
+                {{experiment.name}}
+            </h2>
+            <div class="d-md-flex flex-wrap">
+              <p class="text-break mb-md-3 mr-md-3" style="max-width: calc(100% - 150px); color: #4E4D4D; font-weight: 500; font-size: 14px;">
+                Select <span style="font-weight: 700;">New Model</span> to create a machine learning model from scratch, or choose <span style="font-weight: 700;">FineTune</span> to fine-tune existing models from our repositories.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-auto d-flex justify-content-end">
+            <img src="https://www.kdnuggets.com/wp-content/uploads/wijaya_top_machine_learning_papers_read_2023_1.jpg" alt="Image Description" class="img-fluid d-none d-md-inline-block" style="max-width: 150px; max-height: 150px;">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-auto col-sm-6 mb-3 mr-3">
+            <label class="card card-model position-relative">
+                <input type="radio" id="model1" name="model" class="card-radio-input visually-hidden position-absolute" style="top: 5px; left: 5px;">
+                <img class="card-img-top p-2" src="https://www.kaggle.com/static/images/models/new_model.svg" alt="Card image cap" style="width: 25%; margin: auto; display: block;">
+                <div class="card-body text-center">
+                    <h5 class="card-title" style="font-weight: bold;">New Model</h5>
+                    <p class="card-text">Create new machine learning model from scratch</p>
+                </div>
+            </label>
+        </div>
+        <div class="col-md-auto col-sm-6 mb-3 ml-3">
+            <label class="card card-model position-relative">
+                <input type="radio" id="model2" name="model" class="card-radio-input visually-hidden position-absolute" style="top: 5px; left: 5px;">
+                <img class="card-img-top p-2" src="https://www.kaggle.com/static/images/models/new_model_instance_light.svg" alt="Card image cap" style="width: 25%; margin: auto; display: block;">
+                <div class="card-body text-center">
+                    <h5 class="card-title" style="font-weight: bold;">FineTune</h5>
+                    <p class="card-text">Fine Tune existing models from our repositories</p>
+                </div>
+            </label>
+        </div>
+    </div>
+    <div class="center-container container-fluid block">
+        <form id="experiment-form">
+            {% csrf_token %}
+            <!-- Section 1: Add Model Details -->
+            <div class="mb-3">
+                <label for="model-name" class="form-label">1. Add Model Details</label>
+                <input type="text" class="form-control" id="model-name" placeholder="Enter Model Name" required>
+                <textarea class="form-control mt-2" id="model-description" rows="3" placeholder="Enter Model Description" required></textarea>
+            </div>
+    
+            <!-- Section 2: Model Domain -->
+            <div class="mb-3">
+                <label for="model-domain" class="form-label">2. Model Domain</label>
+                <div class="row">
+                    <div class="col-md-auto mb-3 mr-3">
+                        <select class="form-select" id="model-domain" required>
+                            <option selected disabled>Select Model Domain</option>
+                            <option value="Computer Vision">Computer Vision</option>
+                            <option value="Natural Language Processing">Natural Language Processing</option>
+                            <option value="Speech Recognition">Speech Recognition</option>
+                            <option value="Data Analysis">Data Analysis</option>
+                            <option value="Predictive Analytics">Predictive Analytics</option>
+                            <option value="Machine Translation">Machine Translation</option>
+                            <option value="Recommender Systems">Recommender Systems</option>
+                            <option value="Anomaly Detection">Anomaly Detection</option>
+                            <option value="Time Series Forecasting">Time Series Forecasting</option>
+                            <option value="Object Detection">Object Detection</option>
+                            <option value="Sentiment Analysis">Sentiment Analysis</option>
+                            <option value="Image Segmentation">Image Segmentation</option>
+                            <!-- Add more options as needed -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Section 3: Dataset Selection -->
+            <div class="mb-3">
+                <label class="form-label">3. Dataset Selection</label>
+                <div class="col-md-auto mb-3">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="dataset-type" id="radio-tabular" value="tabular" required>
+                        <label class="form-check-label" for="radio-tabular">Tabular</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="dataset-type" id="radio-text" value="text" required>
+                        <label class="form-check-label" for="radio-text">Text</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="dataset-type" id="radio-image" value="image" required>
+                        <label class="form-check-label" for="radio-image">Image</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="dataset-type" id="radio-audio" value="audio" required>
+                        <label class="form-check-label" for="radio-audio">Audio</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="dataset-type" id="radio-video" value="video" required>
+                        <label class="form-check-label" for="radio-video">Video</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="dataset-type" id="radio-time-series" value="time-series" required>
+                        <label class="form-check-label" for="radio-time-series">Time Series</label>
+                    </div>
+                </div>
+
+                <div class="card" style="width: 80rem">
+                    <div class="card-header" style="font-weight: bold; color: #025A42;">
+                        Select Dataset
+                    </div>
+                    <div class="card-body">
+                        <!-- Selected Dataset Display -->
+                        <div id="selectedDatasetContainer" class="row align-items-center" style="display: none;">
+                            <div class="col">
+                                <p>Selected dataset: <span id="selectedDataset" style="font-size: 15px; font-weight: bold; color: black;"></span></p>
+                            </div>
+                            <div class="col-auto d-flex align-items-center">
+                                <button id="removeDatasetBtn" class="btn btn-danger">
+                                    Remove 
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <hr style="font-size: 15px; font-weight: bolder; color: black;">
+                        <div id="datasetModalTrigger">
+                            <button id="toggleDatasetBtn" class="btn article"><i class=" pl-2 fa fa-plus"></i> Add Dataset</button>
+                        </div>
+                        <p class="card-text pt-3">Want to add a new dataset? <span><a href="">Add Dataset</a></span></p>
+                    </div>
+                </div>
+                
+                <!-- Dataset Selection Modal -->
+                <div id="datasetModal" class="modal">
+                    <!-- Modal content -->
+                    <div class="modal-content p-5">
+                        <!-- Close button -->
+                        <span class="close" style="color: red; font-weight: 900;" id="modalCloseBtn">&times;</span>
+                        <div class="title-container">
+                            <h2 class="modal-title">Select Dataset</h2>
+                        </div>
+                        <form id="datasetForm">
+                            <div id="modalDatasetList">
+                                <!-- Dataset items with radio buttons -->
+                                {% for dataset in datasets %}
+                                <label>
+                                    <input type="radio" class="dataset-radio" name="selectedDataset" value="{{ dataset.file_name }}" data-id="{{ dataset.id }}">
+                                    {{ dataset.file_name }}
+                                </label>
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- Submit button -->
+                            <a id="submitDatasetBtn" class="btn article dataset">Submit</a>
+                        </form>
+                    </div>
+                </div>
+                
+        </form>
+    
+            <!-- Next button -->
+            <div class="row mb-3 pt-5 justify-content-center">
+                <a id="continueButton" type="submit" class="btn btn-lg article">Submit <i class=" pl-2 fa fa-upload"></i></a>
+            </div>
+    </div>  
+</div>
+      
+    <div class="text-center" style="display: none;" id="select-model-btn">
+        <a type="button" class="btn article">Select Model</a>
+    </div>  
+<style>
+    .title-container {
+        text-align: center; /* Center the title */
+        margin-bottom: 20px; /* Add some space below the title */
+        background-color: #02310D; /* Green background color */
+        padding:10px;
+    }
+    .modal-title {
+        color: white; /* Title color */
+        margin: 0; /* Remove default margin */
+    }
+    /* Style Cancel button */
+    .cancel-btn {
+        margin-right: 5px; /* Add margin between buttons */
+    }
+    
+    /* Ensure close button is aligned properly */
+    .close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 24px;
+        color: #aaa;
+    }
+        /* The Modal (background) */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+      }
+      
+      /* Modal Content/Box */
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        padding-bottom: 0px;
+        border: 1px solid #888;
+        width: 50%; /* Could be more or less, depending on screen size */
+      }
+      
+      /* Close Button */
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+      
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      
+        .modal-backdrop {
+            filter: blur(2px);
+        }
+    button.article {
+        background: #025A42 !important;
+        color: #fff !important;
+        border-top-left-radius: 20px; /* Round the top-left corner */
+        border-bottom-left-radius: 20px; /* Round the bottom-left corner */
+        border-top-right-radius: 20px; /* Round the top-right corner */
+        border-bottom-right-radius: 20px; /* Round the bottom-right corner */
+        padding: 5px 10px; /* Adjust padding as needed */
+    }
+    .dataset {
+        background: #025A42 !important;
+        color: #fff !important;
+        border-top-left-radius: 20px; /* Round the top-left corner */
+        border-bottom-left-radius: 20px; /* Round the bottom-left corner */
+        border-top-right-radius: 20px; /* Round the top-right corner */
+        border-bottom-right-radius: 20px; /* Round the bottom-right corner */
+        padding: 5px 10px; /* Adjust padding as needed */
+    }
+    .form-label {
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .card-model {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow */
+        border: 2px solid transparent; /* Default border size and color */
+    }
+    .card-title {
+        font-size: 20px;
+        font-weight: bold;
+    }
+    .card-model p {
+        font-size: 14px;
+        font-weight: 600;
+        color: #4E4D4D;
+    }
+    .card-model:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+    }
+   
+    .card-selected {
+        background-color: #f0f0f0; /* Greyish background color for selected card */
+        border: 3px solid black; /* Increase border size and change color to black when selected */
+    }
+    /* Style for selected radio button */
+    .card-radio-input:checked + .card-img-top {
+        filter: invert(100%);
+    }
+    /* Directly set color of selected radio button */
+    .card-radio-input:checked {
+        color: black;
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Function to close the dataset modal
+        function closeModal() {
+            document.getElementById('datasetModal').style.display = 'none';
+        }
+    
+        // Add event listener to show dataset modal
+        var modalTriggerBtn = document.getElementById('datasetModalTrigger');
+        modalTriggerBtn.addEventListener('click', function () {
+            document.getElementById('datasetModal').style.display = 'block';
+        });
+    
+        // Add event listener to handle form submission
+        var datasetForm = document.getElementById('datasetForm');
+        var submitButton = document.getElementById('submitDatasetBtn');
+        submitButton.addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent default form submission
+    
+            // Get the selected dataset directly from the form
+            var selectedDatasetInput = document.querySelector('input[name="selectedDataset"]:checked');
+    
+            if (selectedDatasetInput) {
+                var selectedDataset = selectedDatasetInput.value;
+                var selectedDatasetId = selectedDatasetInput.getAttribute('data-id');
+            
+                // Update the DOM to display the selected dataset and its ID
+                document.getElementById('selectedDataset').textContent = selectedDataset;
+                document.getElementById('selectedDatasetContainer').style.display = 'block';
+                document.getElementById('selectedDataset').setAttribute('data-id', selectedDatasetId); // Set dataset ID
+            
+                // Log the dataset ID
+                console.log('Dataset Id: ', selectedDatasetId);
+    
+                // Determine the dataset type
+                var datasetType = determineDatasetType(selectedDataset);
+
+                // Determine the dataset size
+                var datasetSize = determineDatasetSize(selectedDataset, datasetType);
+
+                // Display options based on dataset type and size
+                displayOptions(datasetType, datasetSize);
+
+                // Close the modal after submission
+                closeModal();
+            } else {
+                // If no dataset is selected, display an error message or handle it accordingly
+                console.log('Please select a dataset.');
+            }
+        });
+    
+        // Add event listener to close dataset modal (using the modal close button)
+        var modalCloseBtn = document.getElementById('modalCloseBtn');
+        modalCloseBtn.addEventListener('click', function () {
+            closeModal();
+        });
+    
+        // Add event listener to close dataset modal (using the modal background)
+        var modalBackground = document.getElementById('datasetModal');
+        modalBackground.addEventListener('click', function (event) {
+            if (event.target === modalBackground) {
+                closeModal();
+            }
+        });
+
+        // Add event listener to remove the selected dataset
+        var removeDatasetBtn = document.getElementById('removeDatasetBtn');
+        removeDatasetBtn.addEventListener('click', function () {
+            document.getElementById('selectedDatasetContainer').style.display = 'none';
+            document.getElementById('selectedDataset').textContent = '';
+        });
+    });        
+
+    function determineDatasetType(datasetContent) {
+        // Split the dataset content by line breaks to analyze each line
+        var lines = datasetContent.split('\n');
+
+        // Check if the dataset content includes image data
+        var imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp'];
+        var containsImage = lines.some(function(line) {
+            return imageExtensions.some(function(extension) {
+                return line.trim().toLowerCase().endsWith(extension);
+            });
+        });
+
+        if (containsImage) {
+            return 'image';
+        }
+
+        // Check if the dataset content includes CSV data
+        var containsCSVHeader = lines[0].split(',').length > 1;
+        if (containsCSVHeader) {
+            return 'csv';
+        }
+
+        // If no specific type is detected, return 'unknown'
+        return 'unknown';
+    }
+
+    function determineDatasetSize(datasetContent, datasetType) {
+        if (datasetType === 'image') {
+            // Count the number of image files
+            var lines = datasetContent.split('\n');
+            var imageCount = lines.filter(function(line) {
+                return line.trim() !== ''; // Exclude empty lines
+            }).length;
+
+            return imageCount;
+        } else if (datasetType === 'csv') {
+            // Count the number of rows in CSV data
+            var rows = datasetContent.split('\n');
+            // Exclude the header row if present
+            var rowCount = rows.length - 1; // Subtract 1 for the header row
+            return rowCount;
+        }
+
+        // For other types or unknown type, return 0
+        return 0;
+    }
+
+    function displayOptions(datasetType, datasetSize) {
+        // Display options for selecting the percentage of data
+        // to be used for training, validation, and testing based on dataset type and size
+        if (datasetType === 'image') {
+            console.log('Image dataset detected with ' + datasetSize + ' images.');
+            // Display options for image dataset
+        } else if (datasetType === 'csv') {
+            console.log('CSV dataset detected with ' + datasetSize + ' rows.');
+            // Display options for CSV dataset
+        } else {
+            console.log('Unknown dataset type.');
+            // Display options for unknown dataset type
+        }
+    }
+
+    // Get all radio buttons
+    var radioButtons = document.querySelectorAll('.card-radio-input');
+
+    // Add event listener to each radio button
+    radioButtons.forEach(function(radioButton) {
+        radioButton.addEventListener('change', function() {
+            // Remove the 'card-selected' class from all cards
+            document.querySelectorAll('.card').forEach(function(card) {
+                card.classList.remove('card-selected');
+            });
+
+            // Add the 'card-selected' class to the parent card of the selected radio button
+            this.closest('.card').classList.add('card-selected');
+
+            // Check which card is selected
+            var selectedCardId = this.id;
+            if (selectedCardId === 'model1') {
+                // Show the form and center it
+                document.querySelector('.center-container').style.display = 'flex';
+                document.querySelector('.center-container').style.justifyContent = 'center';
+                document.querySelector('.center-container').style.alignItems = 'center';
+                // Hide the select model button
+                document.querySelector('#select-model-btn').style.display = 'none';
+            } else if (selectedCardId === 'model2') {
+                // Hide the form
+                document.querySelector('.center-container').style.display = 'none';
+                // Show the select model button
+                document.querySelector('#select-model-btn').style.display = 'block';
+            }
+        });
+    });
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        var continueButton = document.querySelector('#continueButton');
+        continueButton.addEventListener('click', function (event) {
+            // Prevent form submission
+            event.preventDefault();
+    
+            // Perform form validation
+            var validationResult = validateForm();
+            if (validationResult.isValid) {
+                // Gather form data
+                var formData = {
+                    modelName: document.getElementById('model-name').value,
+                    modelDescription: document.getElementById('model-description').value,
+                    modelDomain: document.getElementById('model-domain').value,
+                    selectedDatasetId: document.querySelector('input[name="selectedDataset"]:checked').getAttribute('data-id'),
+                    experiment_id: {{experiment.id}}
+                };
+                console.log('Form data: ', formData);
+                // Send form data to the server using AJAX
+                sendFormData(formData);
+            } else {
+                // Display validation errors in alert container
+                displayValidationAlerts(validationResult.messages);
+            }
+        });
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    // Check if the cookie contains the specified name
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        // Extract and return the value of the cookie
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }        
+    
+        function sendFormData(formData) {
+            // Create a new XMLHttpRequest object
+            var xhr = new XMLHttpRequest();
+        
+            // Configure the request
+            xhr.open('POST', '/submit_model/', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            
+            // Get CSRF token from cookies
+            var csrftoken = getCookie('csrftoken');
+        
+            // Set CSRF token in request header
+            xhr.setRequestHeader('X-CSRFToken', csrftoken);
+        
+            // Define the callback function
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    // Success callback
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.success) {
+                        // Handle success response
+                        alert('Model submitted successfully!');
+                        // Optionally, you can redirect to another page or perform additional actions
+                    } else {
+                        // Handle failure response
+                        alert('Failed to submit model: ' + response.message);
+                    }
+                } else {
+                    // Error callback
+                    alert('Error while submitting model: ' + xhr.statusText);
+                }
+            };
+        
+            // Send the request with form data
+            xhr.send(JSON.stringify(formData));
+        }
+        
+    
+        function validateForm() {
+            var messages = [];
+    
+            // Perform validation here
+            var modelName = document.getElementById('model-name').value.trim();
+            var modelDescription = document.getElementById('model-description').value.trim();
+            var modelDomain = document.getElementById('model-domain').value.trim();
+            var selectedDataset = document.querySelector('input[name="selectedDataset"]:checked');
+    
+            if (!modelName) {
+                messages.push("Model Name is required.");
+            }
+            if (!modelDescription) {
+                messages.push("Model Description is required.");
+            }
+            if (!modelDomain) {
+                messages.push("Model Domain is required.");
+            }
+            if (!selectedDataset) {
+                messages.push("Please select a Dataset.");
+            }
+    
+            return {
+                isValid: messages.length === 0,
+                messages: messages
+            };
+        }
+    
+        function displayValidationAlerts(messages) {
+            var alertHtml = '<div id="validationAlert" class="alert alert-danger alert-dismissible fade show" role="alert">';
+            alertHtml += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+            alertHtml += '<span aria-hidden="true">&times;</span></button>';
+            alertHtml += '<ul class="list-unstyled">';
+            messages.forEach(function (message) {
+                alertHtml += '<li>' + message + '</li>';
+            });
+            alertHtml += '</ul></div>';
+    
+            // Dynamically create a div for the alert container
+            var alertContainer = document.createElement('div');
+            alertContainer.innerHTML = alertHtml;
+            alertContainer.style.position = 'fixed';
+            alertContainer.style.top = '0';
+            alertContainer.style.left = '0';
+            alertContainer.style.width = '100%';
+            alertContainer.style.zIndex = '9999';
+            document.body.prepend(alertContainer);
+    
+            // Auto close the alert after 2 seconds
+            var alertElement = document.getElementById('validationAlert');
+            setTimeout(function() {
+                alertElement.classList.remove('show');
+                alertElement.classList.add('hide');
+                alertContainer.remove(); 
+            }, 2000);
+        }
+    });
+    
+</script>
+{% endblock %}

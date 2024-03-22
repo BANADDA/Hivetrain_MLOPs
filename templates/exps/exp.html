@@ -4,22 +4,29 @@
 {{project.project_name }} 
 {% endblock %} 
 {% block exp_block %} 
+<!--base.html-->
+{% for message in messages %}
+<div class="alert {{ message.tags }} alert-dismissible shadow fade show" role="alert">
+<button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+</button>
+{{ message | safe }}
+</div>
+{% endfor %}
 {% if experiments%}
 <div class="container">
     <div class="container p-3 card bg-white rounded mb-5">
       <div class="row justify-content-between align-content-between card-body">
         <div class="col-md">
           <h2 class="font-weight-bold text-black fs-1">
-            {{project.project_name}}
+            Experiments
           </h2>
           <div class="d-md-flex flex-wrap">
             <p class="text-break mb-md-3 mr-md-3" style="max-width: calc(100% - 150px);">
               {% comment %} {{project.description }} {% endcomment %} Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio, possimus voluptatibus! Obcaecati architecto veniam vel, similique maxime excepturi quidem rem eaque consequatur dolorem! Quod ullam ad illum doloremque, eius nesciunt!
             </p>
           </div>
-          <a href="{% url 'create_experiment' project_id=project.id %}" class="btn article">
-            <i class='bx bx-plus' href="{% url 'create_experiment' project_id=project.id %}"></i> New Experiment
-          </a>
+          <a id="openModalBtn" class="btn article"><i class="fa fa-flask" aria-hidden="true"></i> New Experiment</a>
         </div>
         <div class="col-md-auto d-flex justify-content-end">
           <img src="https://www.kdnuggets.com/wp-content/uploads/wijaya_top_machine_learning_papers_read_2023_1.jpg" alt="Image Description" class="img-fluid d-none d-md-inline-block" style="max-width: 300px; max-height: 300px;">
@@ -47,7 +54,8 @@
     <div class="row">
         {% for experiment in experiments %}
         <div class="col-md-3 mb-4 experiment-card" data-status="{{ experiment.status }}">
-            <div class="card card-exp">
+            <a href="{% url 'view_experiment' experiment.id %}">
+              <div class="card card-exp">
                 <img class="card-img-top mh-100" src="{{ experiment.random_image_url }}" alt="Card image cap">
                 <div class="card-body" style="max-height: 150px; overflow: hidden;">
                     <div class="d-flex justify-content-between align-items-center mb-2">
@@ -55,11 +63,12 @@
                         <p class="status" style="color: {% if experiment.status == 'active' %}darkgreen{% else %}darkred{% endif %}; font-weight: bold; margin-bottom: 0;">{{ experiment.get_status_display }}</p>
                     </div>
                     <div class="card-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        <p class="dataset">{{ experiment.dataset.file_name|slice:'-3' }}</p>
+                        <p class="dataset">{{ experiment.description}}</p>
                         {% comment %} <p>{{ experiment.description }}</p> {% endcomment %}
                     </div>
                 </div>
-            </div>
+              </div>
+            </a>
         </div>
         {% if forloop.counter|divisibleby:4 and not forloop.last %}
     </div>
@@ -72,29 +81,185 @@
 {% else %}
 <div class="center-container container-fluid">
   <img
-    src="{% static 'images/exp.png' %}"
+    src="{% static 'images/empty.png' %}"
     alt="No projects available"
-    width="500"
-    height="500"
+    width="350"
+    height="350"
     class="img-fluid p-5"
   />
   <h6 class="font-weight-bold">
-    Project {{ project.project_name }} has no experiments
+    No Experiments
   </h6>
   <div class="paragraph-wrapper text-center">
     <p>
-      Press new experiment to create a new machine learning experiment for this
+      No experiments found. Press new experiment to create a new machine learning experiment for your
       project
     </p>
   </div>
-  <a
-    href="{% url 'create_experiment' project_id=project.id %}"
-    class="btn article"
-    >New Experiment</a
-  >
+  <a id="openModalBtn" class="btn article"><i class="fa fa-flask" aria-hidden="true"></i> New Experiment</a>
 </div>
+</div>
+  </div>
 {% endif %} 
+<!-- The Modal -->
+<div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content p-5">
+        <span class="close" style="color: red; font-weight: 900;">&times;</span>
+        <div class="title-container">
+            <h2 class="modal-title">Add New Experiment</h2>
+        </div>
+        <form id="experimentForm" action="{% url 'submit_experiment' %}" method="post" class="modal-form needs-validation" novalidate>
+            {% csrf_token %}
+            <label for="experimentName">Experiment Name:</label>
+            <input type="text" id="experimentName" name="experimentName" class="form-control" required>
+            <div class="valid-feedback">Looks good!</div>
+            <div class="invalid-feedback">Please provide a valid experiment name.</div>
+            
+            <label for="experimentDescription">Experiment Description:</label>
+            <textarea id="experimentDescription" name="experimentDescription" class="form-control" required></textarea>
+            <div class="valid-feedback">Looks good!</div>
+            <div class="invalid-feedback">Please provide a valid experiment description.</div>
+            
+            <div class="justify-content-center px-5 pt-3">
+                    {% comment %} <a href="#" class="btn btn-sm btn-secondary cancel-btn" style="color: black;">Cancel</a> {% endcomment %}
+                    <button type="submit" class="btn btn-sm article">Submit</button>
+                
+            </div>
+        </form>
+    </div>
+</div>
 <style>
+    .title-container {
+        text-align: center; /* Center the title */
+        margin-bottom: 20px; /* Add some space below the title */
+        background-color: #02310D; /* Green background color */
+        padding:10px;
+    }
+    .modal-title {
+        color: white; /* Title color */
+        margin: 0; /* Remove default margin */
+    }
+    button.article{
+      background: #025A42 !important;
+      color: #fff !important;
+    }
+    button.article:hover {
+      background: #037D5C !important;
+      color: #fff !important;
+    }
+/* Style Cancel button */
+.cancel-btn {
+    margin-right: 5px; /* Add margin between buttons */
+}
+
+/* Ensure close button is aligned properly */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    color: #aaa;
+}
+    /* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  
+  /* Modal Content/Box */
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    padding-bottom: 0px;
+    border: 1px solid #888;
+    width: 50%; /* Could be more or less, depending on screen size */
+  }
+  
+  /* Close Button */
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+    .modal-backdrop {
+        filter: blur(2px);
+    }
+   /* Adjust modal content width for mobile responsiveness */
+   /* Adjust modal content for mobile responsiveness */
+@media (max-width: 768px) {
+    .modal-content {
+      width: 90%; /* Set a percentage width for smaller screens */
+      max-width: 90%; /* Ensure maximum width for smaller screens */
+    }
+  
+    #experimentForm label {
+      font-size: 14px; /* Reduce label font size for smaller screens */
+    }
+  
+    #experimentForm input[type="text"],
+    #experimentForm textarea {
+      font-size: 14px; /* Reduce input font size for smaller screens */
+      padding: 8px; /* Reduce padding for smaller screens */
+    }
+  
+    #experimentForm button {
+      font-size: 14px; /* Reduce button font size for smaller screens */
+      padding: 8px; /* Reduce padding for smaller screens */
+    }
+  }
+  
+  /* Add new style for form fields */
+  #experimentForm label {
+    display: block; /* Display labels as block elements */
+    margin-bottom: 5px; /* Add some margin between labels */
+  }
+  
+  #experimentForm input[type="text"],
+  #experimentForm textarea {
+    width: 100%; /* Make input fields occupy full width */
+    margin-bottom: 10px; /* Add margin between input fields */
+  }
+  
+  #experimentForm button {
+    width: 100%; /* Make button occupy full width */
+  }
+      .logo {
+        max-width: 150px;
+        display: block;
+      }
+      
+      small {
+        color: lightgray;
+      }
+      
+      .btn {
+        background-color: white;
+        padding: 1em 1.5em;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        i {
+          padding-right: 0.3em;
+        }
+      }
     .btn-outline-dark {
         width: 120px; /* Adjust width as needed */
     }
@@ -127,6 +292,74 @@
     }
 </style>
 <script>
+// Get the modal
+var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("openModalBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on the button, open the modal
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+// JavaScript for closing modal on Cancel button click
+document.addEventListener("DOMContentLoaded", function() {
+    const cancelBtn = document.querySelector(".cancel-btn");
+    const modal = document.getElementById("myModal");
+
+    cancelBtn.addEventListener("click", function(event) {
+        event.preventDefault();
+        modal.style.display = "none";
+    });
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("experimentForm");
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        fetch(form.action, {
+            method: form.method,
+            body: new FormData(form)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success notification
+              //  alert(data.message);
+                // Optionally, reload the page or perform any other action
+                window.location.reload();
+            } else {
+                // Show error notification
+              //  alert("Error: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Show error notification
+           // alert("An error occurred while submitting the form.");
+        });
+    });
+});
+
     document.addEventListener("DOMContentLoaded", function () {
         const buttons = document.querySelectorAll("#btnGroup button");
 

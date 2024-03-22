@@ -1,38 +1,28 @@
 {% load static %}
 
 <!DOCTYPE html>
-<!-- Created by CodingLab |www.youtube.com/CodingLabYT-->
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Hivetrain | ResearchLabs</title>
-    <link rel="stylesheet" href="style.css" />
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Boxicons CDN Link -->
-    <link rel="stylesheet" href="{% static 'fonts/icomoon/style.css' %}">
-    <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-
-    {% comment %} <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
-    <link rel="stylesheet" href="{% static 'fa/css/all.min.css' %}" />
-    <script src="{% static 'js/bootstrap.min.js' %}"></script> {% endcomment %}
-    <title>{% block title %}MLOPs{% endblock %}</title>
-    <!-- UniIcon CDN Link  -->
-    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-    <link
-      href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"
-      rel="stylesheet"
-    />
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter&display=swap">
-
   
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <title>Hivetrain | ResearchLabs</title>
+  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Boxicons CDN Link -->
+  <link rel="stylesheet" href="{% static 'fonts/icomoon/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <!-- UniIcon CDN Link  -->
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+  <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet"/>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter&display=swap">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
   <body style="background-color: #EDF5EE">
     <div class="sidebar">
       <div class="logo-details">
@@ -54,11 +44,11 @@
           <span class="tooltip">Dashboard</span>
         </li>
         <li>
-          <a href="{% url 'projects' %}">
+          <a href="{% url 'experiments' %}">
             <i class="bx bx-task"></i>
-            <span class="links_name">Projects</span>
+            <span class="links_name">Experiments</span>
           </a>
-          <span class="tooltip">Projects</span>
+          <span class="tooltip">Experiments</span>
         </li>
         <li>
           <a href="#">
