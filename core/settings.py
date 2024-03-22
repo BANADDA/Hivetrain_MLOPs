@@ -91,7 +91,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config( default='postgres://hive_db_user:6Vilio8GOgv7FgtT0xgJCAzaEp2AKd58@dpg-cnnsbjn109ks73cgbsgg-a.oregon-postgres.render.com/hive_db', conn_max_age=600)}
+    'default': dj_database_url.config( default='postgres://hivemind_user:YsiJlbNPKbGpfvHLITOvpbnGOzv8PzSe@dpg-cnus61un7f5s73fc6ua0-a.ohio-postgres.render.com/hivemind', conn_max_age=600)}
 
 
 # DATABASES = {
