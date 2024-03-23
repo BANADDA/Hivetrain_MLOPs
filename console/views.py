@@ -53,8 +53,12 @@ def submit_experiment(request):
 
 def view_experiment(request, experiment_id):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
+    # Retrieve the model associated with the experiment
+    model = Model.objects.filter(experiment=experiment).first() 
+    # Retrieve training jobs associated with the model
+    training_jobs = TrainingJob.objects.filter(model=model) if model else []
     datasets = Dataset.objects.all() 
-    return render(request, 'exps/experiment_details.html', {'experiment': experiment, 'datasets': datasets})
+    return render(request, 'exps/experiment_details.html', {'experiment': experiment, 'model': model, 'training_jobs': training_jobs, 'datasets': datasets})
 
 def new_model(request):
     if request.method == 'POST':
