@@ -25,7 +25,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-
+  <div id="overlay"></div>
 <!-- Fixed Navbar -->
 <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
   <div class="row px-3 justify-content-center align-items-center">
@@ -105,6 +105,16 @@
     {{ message | safe }}
 </div>
 {% endfor %} {% endcomment %}
+<!--base.html-->
+{% for message in messages %}
+<div class="alert {{ message.tags }} alert-dismissible shadow fade show" role="alert">
+<button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+</button>
+{{ message | safe }}
+
+</div>
+{% endfor %}
     {% block exp_block %}
     {% endblock %}
 </section>
@@ -141,6 +151,31 @@
 <style>
     /* Google Font Link */
     @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+      z-index: 9999; /* Ensure it's above other content */
+      display: none; /* Initially hidden */
+  }
+  
+  .spinner-container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10000; /* Ensure it's above the overlay */
+  }
+  
+.alert.success {background-color: #03950D;}
+.alert.info {background-color: #2196F3;}
+.alert.warning {background-color: #ff9800;}  
+.spinner-white {
+  color: white !important; /* Set the color to white */
+}
     * {
       margin: 0;
       padding: 0;
@@ -320,6 +355,28 @@
 
 <!-- Initialize Bootstrap components -->
 <script>
+function handleAjaxResponse(response) {
+  if (response.success) {
+      showMessage(response.message, 'success');
+  } else {
+      showMessage(response.message, 'error');
+  }
+
+  setTimeout(function() {
+      $('.alert').alert('close');
+  }, 2000);
+}
+
+function showMessage(message, type) {
+  var alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+  var messageHtml = '<div class="alert ' + alertClass + ' alert-dismissible fade show" role="alert">' +
+                      message +
+                      '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                   '</div>';
+
+  // Append the message to a container (assuming you have a container with ID 'message-container')
+  $('#message-container').append(messageHtml);
+}
   function goBack() {
       window.history.back(); // Navigate to the previous page
   }

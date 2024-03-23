@@ -15,7 +15,7 @@
 
     {% else %}
     <div class="container card bg-white rounded mb-5">
-        <div class="row justify-content-between align-content-between card-body">
+        <div class="row justify-content-between align-content-between card-body custom-card-body">
           <div class="col-md">
             <h2 class="font-weight-bold text-black fs-1">
                 {{experiment.name}}
@@ -54,142 +54,473 @@
             </label>
         </div>
     </div>
-    <div class="center-container container-fluid block">
-        <form id="experiment-form">
-            {% csrf_token %}
+    <div class="center-container container card bg-transparent rounded" style="width: 100%;">
+        <div class="card-body">
+        {% comment %} <form id="experiment-form">
+            {% csrf_token %} {% endcomment %}
             <!-- Section 1: Add Model Details -->
             <div class="mb-3">
                 <label for="model-name" class="form-label">1. Add Model Details</label>
-                <input type="text" class="form-control" id="model-name" placeholder="Enter Model Name" required>
-                <textarea class="form-control mt-2" id="model-description" rows="3" placeholder="Enter Model Description" required></textarea>
+                <input type="text" class="form-control" placeholder="Enter Model Name">
+                {% comment %} <textarea class="form-control mt-2" id="model-description" rows="3" placeholder="Enter Model Description" required></textarea> {% endcomment %}
             </div>
-    
-            <!-- Section 2: Model Domain -->
-            <div class="mb-3">
-                <label for="model-domain" class="form-label">2. Model Domain</label>
-                <div class="row">
-                    <div class="col-md-auto mb-3 mr-3">
-                        <select class="form-select" id="model-domain" required>
-                            <option selected disabled>Select Model Domain</option>
-                            <option value="Computer Vision">Computer Vision</option>
-                            <option value="Natural Language Processing">Natural Language Processing</option>
-                            <option value="Speech Recognition">Speech Recognition</option>
-                            <option value="Data Analysis">Data Analysis</option>
-                            <option value="Predictive Analytics">Predictive Analytics</option>
-                            <option value="Machine Translation">Machine Translation</option>
-                            <option value="Recommender Systems">Recommender Systems</option>
-                            <option value="Anomaly Detection">Anomaly Detection</option>
-                            <option value="Time Series Forecasting">Time Series Forecasting</option>
-                            <option value="Object Detection">Object Detection</option>
-                            <option value="Sentiment Analysis">Sentiment Analysis</option>
-                            <option value="Image Segmentation">Image Segmentation</option>
-                            <!-- Add more options as needed -->
-                        </select>
-                    </div>
-                </div>
-            </div>
-    
-            <!-- Section 3: Dataset Selection -->
-            <div class="mb-3">
-                <label class="form-label">3. Dataset Selection</label>
-                <div class="col-md-auto mb-3">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="dataset-type" id="radio-tabular" value="tabular" required>
-                        <label class="form-check-label" for="radio-tabular">Tabular</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="dataset-type" id="radio-text" value="text" required>
-                        <label class="form-check-label" for="radio-text">Text</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="dataset-type" id="radio-image" value="image" required>
-                        <label class="form-check-label" for="radio-image">Image</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="dataset-type" id="radio-audio" value="audio" required>
-                        <label class="form-check-label" for="radio-audio">Audio</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="dataset-type" id="radio-video" value="video" required>
-                        <label class="form-check-label" for="radio-video">Video</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="dataset-type" id="radio-time-series" value="time-series" required>
-                        <label class="form-check-label" for="radio-time-series">Time Series</label>
-                    </div>
-                </div>
-
-                <div class="card" style="width: 80rem">
-                    <div class="card-header" style="font-weight: bold; color: #025A42;">
-                        Select Dataset
-                    </div>
-                    <div class="card-body">
-                        <!-- Selected Dataset Display -->
-                        <div id="selectedDatasetContainer" class="row align-items-center" style="display: none;">
-                            <div class="col">
-                                <p>Selected dataset: <span id="selectedDataset" style="font-size: 15px; font-weight: bold; color: black;"></span></p>
+            <div class="row">
+                <!-- Section 2: Model Domain -->
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <label for="model-domain" class="form-label">2. Model Domain</label>
+                        <div class="card">
+                            <div class="card-header" style="background-color: #02310D; color: white;">
+                                Select your model domain
                             </div>
-                            <div class="col-auto d-flex align-items-center">
-                                <button id="removeDatasetBtn" class="btn btn-danger">
-                                    Remove 
-                                    <i class="fa fa-times"></i>
-                                </button>
+                            <div class="card-body">
+                                <div id="button-container">
+                                    <button class="selectable-button" id="cv-button">Computer Vision</button>
+                                    <button class="selectable-button" id="nlp-button">NLP</button>
+                                    {% comment %} <button class="selectable-button" id="time-series-button">Time Series</button> {% endcomment %}
+                                </div>
+                                <div class="container pt-3">
+                                <!-- NLP task buttons-->
+                                <div id="nlp-tasks" style="display: none;">
+                                    <hr class="solid">
+                                    <div class="card border-success mb-3">
+                                        <div class="card-header bg-transparent border-success">
+                                            <div class="row justify-content-center">
+                                                <div class="col text-center">
+                                                    <a class="nlp-task-button btn article" data-section-id="machine-translation-section">Machine Translation</a>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <div class="divider-vertical"></div>
+                                                </div>
+                                                <div class="col text-center">
+                                                    <a class="nlp-task-button btn article" data-section-id="speech-recognition-section">Speech Recognition</a>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <div class="divider-vertical"></div>
+                                                </div>
+                                                <div class="col text-center">
+                                                    <a class="nlp-task-button btn article" data-section-id="named-entity-recognition-section">Named Entity Recognition</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <!-- Form for Machine Translation task -->
+                                            <div id="machine-translation-section" class="nlp-task-section" style="display: none;">
+                                                <h5 class="card-title">Machine Translation</h5>
+                                                <div class="form-group">
+                                                    <label for="source_language">Source Language:</label>
+                                                    <select class="form-control" id="source_language">
+                                                        <option value="english">English</option>
+                                                        <option value="spanish">Spanish</option>
+                                                        <option value="french">French</option>
+                                                        <!-- Add more language options as needed -->
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="target_language">Target Language:</label>
+                                                    <select class="form-control" id="target_language">
+                                                        <option value="english">English</option>
+                                                        <option value="spanish">Spanish</option>
+                                                        <option value="french">French</option>
+                                                        <!-- Add more language options as needed -->
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="model_architecture">Model Architecture:</label>
+                                                    <select class="form-control" id="model_architecture">
+                                                        <option value="transformer">Transformer</option>
+                                                        <option value="seq2seq">Seq2Seq</option>
+                                                        <option value="bert">BERT</option>
+                                                        <!-- Add more model architectures as needed -->
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="evaluation_metrics">Evaluation Metrics:</label><br>
+                                                    <input type="checkbox" id="bleu_score" name="bleu_score">
+                                                    <label for="bleu_score">BLEU Score</label><br>
+                                                    <input type="checkbox" id="meteor_score" name="meteor_score">
+                                                    <label for="meteor_score">METEOR Score</label><br>
+                                                    <input type="checkbox" id="rouge_score" name="rouge_score">
+                                                    <label for="rouge_score">ROUGE Score</label><br>
+                                                    <!-- Add more evaluation metrics as needed -->
+                                                </div>
+                                            </div>
+                                
+                                            <!-- Form for Speech Recognition task -->
+                                            <div id="speech-recognition-section" class="nlp-task-section" style="display: none;">
+                                                <h5 class="card-title">Speech Recognition</h5>
+                                                <div class="form-group">
+                                                    <label for="audio_input_format">Audio Input Format:</label>
+                                                    <select class="form-control" id="audio_input_format">
+                                                        <option value="wav">WAV</option>
+                                                        <option value="mp3">MP3</option>
+                                                        <option value="ogg">OGG</option>
+                                                        <!-- Add more audio format options as needed -->
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="model_architecture">Model Architecture:</label>
+                                                    <input type="text" class="form-control" id="model_architecture" placeholder="Enter model architecture">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="language_model">Language Model:</label>
+                                                    <input type="text" class="form-control" id="language_model" placeholder="Enter language model">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="evaluation_metrics">Evaluation Metrics:</label><br>
+                                                    <input type="checkbox" id="wer" name="wer">
+                                                    <label for="wer">Word Error Rate (WER)</label><br>
+                                                    <input type="checkbox" id="cer" name="cer">
+                                                    <label for="cer">Character Error Rate (CER)</label><br>
+                                                    <input type="checkbox" id="accuracy" name="accuracy">
+                                                    <label for="accuracy">Accuracy</label><br>
+                                                    <!-- Add more evaluation metrics as needed -->
+                                                </div>
+                                            </div>
+                                
+                                            <!-- Form for Named Entity Recognition task -->
+                                            <div id="named-entity-recognition-section" class="nlp-task-section" style="display: none;">
+                                                <h5 class="card-title">Named Entity Recognition</h5>
+                                                <div class="form-group">
+                                                    <label for="input_text_format">Input Text Format:</label>
+                                                    <select class="form-control" id="input_text_format">
+                                                        <option value="plain_text">Plain Text</option>
+                                                        <option value="pdf">PDF</option>
+                                                        <option value="docx">DOCX</option>
+                                                        <!-- Add more text format options as needed -->
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="model_architecture">Model Architecture:</label>
+                                                    <input type="text" class="form-control" id="model_architecture" placeholder="Enter model architecture">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="entity_types">Entity Types:</label>
+                                                    <input type="text" class="form-control" id="entity_types" placeholder="Enter entity types">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="evaluation_metrics">Evaluation Metrics:</label><br>
+                                                    <input type="checkbox" id="precision" name="precision">
+                                                    <label for="precision">Precision</label><br>
+                                                    <input type="checkbox" id="recall" name="recall">
+                                                    <label for="recall">Recall</label><br>
+                                                    <input type="checkbox" id="f1_score" name="f1_score">
+                                                    <label for="f1_score">F1-score</label><br>
+                                                    <!-- Add more evaluation metrics as needed -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- CV task buttons -->
+                                <div id="cv-tasks" style="display: none;">
+                                    <hr class="solid">
+                                    <div class="card border-success mb-3">
+                                        <div class="card-header bg-transparent border-success">
+                                            <div class="row justify-content-center">
+                                                <div class="col text-center">
+                                                    <a class="cv-task-button btn article" data-section-id="object-detection-section">Object Detection</a>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <div class="divider-vertical"></div>
+                                                </div>
+                                                <div class="col text-center">
+                                                    <a class="cv-task-button btn article" data-section-id="image-classification-section">Image Classification</a>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <div class="divider-vertical"></div>
+                                                </div>
+                                                {% comment %} <div class="col text-center">
+                                                    <a class="cv-task-button btn article" data-section-id="segmentation-section">Segmentation</a>
+                                                </div> {% endcomment %}
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="object-detection-section" class="cv-task-section" style="display: none;">
+                                                <h5 class="card-title">Object Detection</h5>
+                                                
+                                                <div class="form-group">
+                                                    <label for="input_image_size">Input Image Size/Resolution:</label>
+                                                    <input type="text" class="form-control" id="input_image_size" placeholder="Enter input image size/resolution">
+                                                </div>
+                                            
+                                                <div class="form-group">
+                                                    <label for="model_architecture">Model Architecture:</label>
+                                                    <select class="form-control" id="model_architecture">
+                                                        <option value="Faster R-CNN">Faster R-CNN</option>
+                                                        <option value="YOLO">YOLO (You Only Look Once)</option>
+                                                        <option value="SSD">SSD (Single Shot MultiBox Detector)</option>
+                                                        <!-- Add more model architectures as needed -->
+                                                    </select>
+                                                </div>
+                                            
+                                                <div class="form-group">
+                                                    <label for="anchor_box_sizes">Anchor Box Sizes:</label>
+                                                    <input type="text" class="form-control" id="anchor_box_sizes" placeholder="Enter anchor box sizes (e.g., 32, 64, 128)">
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label for="anchor_box_aspect_ratios">Anchor Box Aspect Ratios:</label>
+                                                    <input type="text" class="form-control" id="anchor_box_aspect_ratios" placeholder="Enter anchor box aspect ratios (e.g., 0.5, 1, 2)">
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label for="anchor_box_scales">Anchor Box Scales:</label>
+                                                    <input type="text" class="form-control" id="anchor_box_scales" placeholder="Enter anchor box scales (e.g., 0.5, 1, 2)">
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label for="anchor_box_placement">Anchor Box Placement:</label>
+                                                    <input type="text" class="form-control" id="anchor_box_placement" placeholder="Enter anchor box placement information">
+                                                </div>                                                
+                                            
+                                                <div class="form-group">
+                                                    <label for="data_augmentation">Data Augmentation Techniques:</label><br>
+                                                    <input type="checkbox" id="rotation" name="rotation">
+                                                    <label for="rotation">Rotation</label><br>
+                                                    <input type="checkbox" id="translation" name="translation">
+                                                    <label for="translation">Translation</label><br>
+                                                    <input type="checkbox" id="scaling" name="scaling">
+                                                    <label for="scaling">Scaling</label><br>
+                                                    <input type="checkbox" id="flipping" name="flipping">
+                                                    <label for="flipping">Flipping</label><br>
+                                                    <!-- Add more data augmentation techniques as needed -->
+                                                </div>
+                                            
+                                                <div class="form-group">
+                                                    <label for="learning_rate">Learning Rate:</label>
+                                                    <input type="number" class="form-control" id="learning_rate" step="0.001" placeholder="Enter learning rate">
+                                                </div>
+                                            
+                                                <div class="form-group">
+                                                    <label for="batch_size">Batch Size:</label>
+                                                    <input type="number" class="form-control" id="batch_size" placeholder="Enter batch size">
+                                                </div>
+                                            
+                                                <div class="form-group">
+                                                    <label for="optimizer">Optimizer:</label>
+                                                    <select class="form-control" id="optimizer">
+                                                        <option value="SGD">SGD</option>
+                                                        <option value="Adam">Adam</option>
+                                                        <option value="RMSprop">RMSprop</option>
+                                                        <!-- Add more optimizers as needed -->
+                                                    </select>
+                                                </div>
+                                            
+                                                <div class="form-group">
+                                                    <label for="dropout_rate">Dropout Rate:</label>
+                                                    <input type="number" class="form-control" id="dropout_rate" step="0.1" placeholder="Enter dropout rate">
+                                                </div>
+                                            
+                                                <div class="form-group">
+                                                    <label for="evaluation_metrics">Evaluation Metrics:</label>
+                                                    <input type="text" class="form-control" id="evaluation_metrics" placeholder="Enter evaluation metrics">
+                                                </div>
+                                            </div>
+                                            <div id="image-classification-section" class="cv-task-section" style="display: none;">
+                                                <!-- Content related to Image Classification -->
+                                                <h5 class="card-title">Image Classification</h5>
+                                                <div class="form-group">
+                                                    <label for="num_layers">Number of Layers:</label>
+                                                    <input type="number" class="form-control" id="num_layers" placeholder="Enter number of layers">
+                                                </div>
+                                            
+                                                <div class="form-group">
+                                                    <label for="conv_kernel_size">Convolutional Kernel Size:</label>
+                                                    <input type="text" class="form-control" id="conv_kernel_size" placeholder="Enter convolutional kernel size">
+                                                </div>
+                                            
+                                                <div class="form-group">
+                                                    <label for="num_filters">Number of Filters:</label>
+                                                    <input type="number" class="form-control" id="num_filters" placeholder="Enter number of filters">
+                                                </div>
+                                            
+                                                <div class="form-group">
+                                                    <label for="learning_rate">Learning Rate:</label>
+                                                    <input type="number" class="form-control" id="learning_rate" step="0.001" placeholder="Enter learning rate">
+                                                </div>
+                                            
+                                                <div class="form-group">
+                                                    <label for="batch_size">Batch Size:</label>
+                                                    <input type="number" class="form-control" id="batch_size" placeholder="Enter batch size">
+                                                </div>
+                                            
+                                                <div class="form-group">
+                                                    <label for="optimizer">Optimizer:</label>
+                                                    <select class="form-control" id="optimizer">
+                                                        <option value="SGD">SGD</option>
+                                                        <option value="Adam">Adam</option>
+                                                        <option value="RMSprop">RMSprop</option>
+                                                    </select>
+                                                </div>
+                                            
+                                                <div class="form-group">
+                                                    <label for="dropout_rate">Dropout Rate:</label>
+                                                    <input type="number" class="form-control" id="dropout_rate" step="0.1" placeholder="Enter dropout rate">
+                                                </div>
+                                            
+                                                <div class="form-group">
+                                                    <label>Data Augmentation Techniques:</label><br>
+                                                    <input type="checkbox" id="rotation" name="rotation">
+                                                    <label for="rotation">Rotation</label><br>
+                                                    <input type="checkbox" id="translation" name="translation">
+                                                    <label for="translation">Translation</label><br>
+                                                    <input type="checkbox" id="scaling" name="scaling">
+                                                    <label for="scaling">Scaling</label><br>
+                                                    <input type="checkbox" id="flipping" name="flipping">
+                                                    <label for="flipping">Flipping</label><br>
+                                                </div>
+                                                
+                                            </div>
+                                        {% comment %} <div class="card-footer bg-transparent border-success">Footer</div> {% endcomment %}
+                                    </div>                                    
+                                </div>                                
+                            </div>
                             </div>
                         </div>
-                        <hr style="font-size: 15px; font-weight: bolder; color: black;">
-                        <div id="datasetModalTrigger">
-                            <button id="toggleDatasetBtn" class="btn article px-2"><i class=" pl-2 fa fa-plus"></i> Add Dataset</button>
-                        </div>
-                        <p class="card-text pt-3">Want to add a new dataset? <span><a href="">Add Dataset</a></span></p>
                     </div>
                 </div>
+                <!-- Section 3: Dataset Selection -->
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <label class="form-label">3. Dataset Selection</label>
+                        <div class="card">
+                            <div class="card-header" style="background-color: #02310D; color: white;">
+                                Provide link to your dataset
+                            </div>
+                            <div class="card-body">
+                                <!-- Selected Dataset Display -->
+                                <div id="selectedDatasetContainer" class="row align-items-center" style="display: none;">
+                                    <div class="col">
+                                        <p>Selected dataset:</p>
+                                    </div>
+                                    <div class="col-auto d-flex align-items-center">
+                                        <button id="removeDatasetBtn" class="btn btn-danger">
+                                            Remove 
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <hr style="font-size: 15px; font-weight: bolder; color: black;">
+                                <div id="datasetModalTrigger">
+                                    <button id="toggleDatasetBtn" class="btn article px-2"><i class=" pl-2 fa fa-plus"></i> Add Dataset</button>
+                                </div>
+                                <p class="card-text pt-3">Want to add a new dataset? <span><a href="">Upload Dataset</a></span></p>
+                            </div>
+                        </div>
+                        <!-- Dataset Selection Modal -->
+                        <div id="datasetModal" class="modal">
+                            <!-- Modal content -->
+                            <div class="modal-content">
+                                <div class="card">
+                                    <div class="card-header row justify-content-between">
+                                        <h5 class="card-title">Featured</h5>
+                                        <button class="close-button" style="color: red;">&times;</button>
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="card-title">Special title treatment</h5>
+                                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                                        <div class="row justify-content-between">
+                                            <button class="btn btn-danger cancel-button">Cancel</button>
+                                            <a class="btn article">Go somewhere</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                        
+                    </div>
+                </div>
+            </div>            
                 
-                <!-- Dataset Selection Modal -->
-                <div id="datasetModal" class="modal">
-                    <!-- Modal content -->
-                    <div class="modal-content p-5">
-                        <!-- Close button -->
-                        <span class="close" style="color: red; font-weight: 900;" id="modalCloseBtn">&times;</span>
-                        <div class="title-container">
-                            <h2 class="modal-title">Select Dataset</h2>
-                        </div>
-                        <form id="datasetForm">
-                            <div id="modalDatasetList">
-                                <!-- Dataset items with radio buttons -->
-                                {% for dataset in datasets %}
-                                <label>
-                                    <input type="radio" class="dataset-radio" name="selectedDataset" value="{{ dataset.file_name }}" data-id="{{ dataset.id }}">
-                                    {{ dataset.file_name }}
-                                </label>
-                                {% endfor %}
-                            </div>
-                            
-                            <!-- Submit button -->
-                            <a id="submitDatasetBtn" class="btn article dataset">Submit</a>
-                        </form>
-                    </div>
-                </div>
-                
-        </form>
+        {% comment %} </form> {% endcomment %}
     
             <!-- Next button -->
             <div class="row mb-3 pt-5 justify-content-center">
                 <a id="continueButton" type="submit" class="btn btn-lg article">Start Trainings <i class=" pl-2 fa fa-upload"></i></a>
             </div>
-    </div>  
+    </div>   
 </div>
-      
+</div>  
     <div class="text-center" style="display: none;" id="select-model-btn">
         <a type="button" class="btn article">Select Model</a>
     </div>  
+   
 
     {% endif %}
 <style>
+    .cv-task-button.active {
+        background-color: green !important; /* Change the active color as needed */
+        color: white;
+    }
+        .divider-vertical {
+            height: 100%;
+            width: 1px;
+            background-color: #ccc; /* Change the color as needed */
+            margin: 0 auto;
+        }
+        
+    .divider-vertical {
+        height: 100%;
+        width: 1px;
+        background-color: #ccc; /* Change the color as needed */
+        margin: 0 auto;
+    }
+    .cv-task-button.active {
+        background-color: green !important; /* Change the active color as needed */
+        color: white;
+    }
+    hr.solid {
+        border-top: 2px solid #999;
+    }
+    .selectable-button {
+        padding: 10px 20px;
+        margin-right: 10px;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        cursor: pointer;
+        position: relative;
+        float: left;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      
+      .selectable-button.selected {
+        background-color: green;
+        color: white;
+      }
+      
+      .selectable-button.selected::before {
+        content: '\2713';
+        margin-right: 5px;
+        position: absolute;
+        left: 5px;
+      }
+      
+      .selectable-button.selected::after {
+        content: '';
+        display: block;
+        clear: both;
+      }
+      
+      .selectable-button:hover {
+        background-color: #f0f0f0;
+        transform: scale(1.05);
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+      }
+      
+      .selectable-button.selected:hover {
+        background-color: #5cb85c;
+        transform: scale(1.05);
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+      }      
+      
     .title-container {
         text-align: center; /* Center the title */
         margin-bottom: 20px; /* Add some space below the title */
         background-color: #02310D; /* Green background color */
-        padding:10px;
+        
     }
     .modal-title {
         color: white; /* Title color */
@@ -225,9 +556,7 @@
       /* Modal Content/Box */
       .modal-content {
         background-color: #fefefe;
-        margin: 15% auto; /* 15% from the top and centered */
-        padding: 20px;
-        padding-bottom: 0px;
+        margin: 15% auto;
         border: 1px solid #888;
         width: 50%; /* Could be more or less, depending on screen size */
       }
@@ -305,6 +634,120 @@
     }
 </style>
 <script>
+    // JavaScript for closing the modal when the close button or cancel button is clicked
+document.addEventListener("DOMContentLoaded", function() {
+    const modal = document.getElementById("datasetModal");
+    const closeButton = modal.querySelector(".close-button");
+    const cancelButton = modal.querySelector(".cancel-button");
+
+    closeButton.addEventListener("click", function() {
+        modal.style.display = "none"; // Hide the modal
+    });
+
+    cancelButton.addEventListener("click", function() {
+        modal.style.display = "none"; // Hide the modal
+    });
+});
+    // JavaScript for closing the modal when the close button is clicked
+document.addEventListener("DOMContentLoaded", function() {
+    const modal = document.getElementById("datasetModal");
+    const closeButton = modal.querySelector(".close-button");
+
+    closeButton.addEventListener("click", function() {
+        modal.style.display = "none"; // Hide the modal
+    });
+});
+    // JavaScript for toggling section visibility based on button clicks
+document.addEventListener("DOMContentLoaded", function() {
+    const buttons = document.querySelectorAll(".nlp-task-button");
+    const sections = document.querySelectorAll(".nlp-task-section");
+
+    buttons.forEach(button => {
+        button.addEventListener("click", function() {
+            const sectionId = this.getAttribute("data-section-id");
+            sections.forEach(section => {
+                if (section.id === sectionId) {
+                    section.style.display = "block";
+                } else {
+                    section.style.display = "none";
+                }
+            });
+        });
+    });
+});
+    document.addEventListener('DOMContentLoaded', function() {
+        const cvButtons = document.querySelectorAll('.cv-task-button');
+        const cvSections = document.querySelectorAll('.cv-task-section');
+
+        cvButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                cvButtons.forEach(btn => btn.classList.remove('active'));
+
+                // Add active class to the clicked button
+                button.classList.add('active');
+
+                // Hide all sections
+                cvSections.forEach(section => section.style.display = 'none');
+
+                // Show the corresponding section based on the clicked button
+                const sectionId = button.getAttribute('data-section-id');
+                const section = document.getElementById(sectionId);
+                section.style.display = 'block';
+            });
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        const cvButton = document.getElementById('cv-button');
+        const cvTasks = document.getElementById('cv-tasks');
+        const nlpButton = document.getElementById('nlp-button');
+        const nlpTasks = document.getElementById('nlp-tasks');
+        const timeSeriesButton = document.getElementById('time-series-button');
+        const timeSeriesTasks = document.getElementById('time-series-tasks');
+    
+        // Add event listener to the "Computer Vision" button
+        cvButton.addEventListener('click', function() {
+            // Display CV task buttons
+            cvTasks.style.display = 'block';
+    
+            // Hide other task buttons if they were displayed
+            nlpTasks.style.display = 'none';
+            timeSeriesTasks.style.display = 'none';
+        });
+    
+        // Add event listener to the "NLP" button
+        nlpButton.addEventListener('click', function() {
+            // Display NLP task buttons
+            nlpTasks.style.display = 'block';
+    
+            // Hide CV and Time Series task buttons
+            cvTasks.style.display = 'none';
+            timeSeriesTasks.style.display = 'none';
+        });
+    
+        // Add event listener to the "Time Series" button
+        timeSeriesButton.addEventListener('click', function() {
+            // Display Time Series task buttons
+            timeSeriesTasks.style.display = 'block';
+    
+            // Hide CV and NLP task buttons
+            cvTasks.style.display = 'none';
+            nlpTasks.style.display = 'none';
+        });
+    });    
+    document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.selectable-button');
+      
+        buttons.forEach(button => {
+          button.addEventListener('click', function() {
+            buttons.forEach(btn => {
+              btn.classList.remove('selected');
+            });
+            button.classList.add('selected');
+          });
+        });
+      });
+      
     document.addEventListener('DOMContentLoaded', function () {
         // Function to close the dataset modal
         function closeModal() {
@@ -449,17 +892,15 @@
             document.querySelectorAll('.card').forEach(function(card) {
                 card.classList.remove('card-selected');
             });
-
+    
             // Add the 'card-selected' class to the parent card of the selected radio button
             this.closest('.card').classList.add('card-selected');
-
+    
             // Check which card is selected
             var selectedCardId = this.id;
             if (selectedCardId === 'model1') {
-                // Show the form and center it
+                // Show the form
                 document.querySelector('.center-container').style.display = 'flex';
-                document.querySelector('.center-container').style.justifyContent = 'center';
-                document.querySelector('.center-container').style.alignItems = 'center';
                 // Hide the select model button
                 document.querySelector('#select-model-btn').style.display = 'none';
             } else if (selectedCardId === 'model2') {
@@ -469,7 +910,7 @@
                 document.querySelector('#select-model-btn').style.display = 'block';
             }
         });
-    });
+    });    
     
     document.addEventListener('DOMContentLoaded', function () {
         var continueButton = document.querySelector('#continueButton');
@@ -557,15 +998,11 @@
     
             // Perform validation here
             var modelName = document.getElementById('model-name').value.trim();
-            var modelDescription = document.getElementById('model-description').value.trim();
             var modelDomain = document.getElementById('model-domain').value.trim();
             var selectedDataset = document.querySelector('input[name="selectedDataset"]:checked');
     
             if (!modelName) {
                 messages.push("Model Name is required.");
-            }
-            if (!modelDescription) {
-                messages.push("Model Description is required.");
             }
             if (!modelDomain) {
                 messages.push("Model Domain is required.");

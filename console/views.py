@@ -42,7 +42,12 @@ def submit_experiment(request):
         experiment = Experiment.objects.create(name=experiment_name, description=experiment_description)
 
         if experiment:
-            messages.success(request, 'Experiment submitted successfully!', 'alert-success alert-dismissible')
+            # Add success message with experiment name
+            messages.success(request, f'Experiment {experiment_name} created successfully', 'alert-success alert-dismissible')
+            
+            # Set a timer to automatically dismiss the success message after 2 seconds
+            request.session['dismiss_success_message'] = timezone.now().timestamp() + 2000
+            
             return JsonResponse({'success': True, 'exp_id': experiment.id})
         else:
             messages.error(request, 'Failed to save experiment data')
