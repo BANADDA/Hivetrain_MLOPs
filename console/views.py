@@ -43,7 +43,7 @@ def submit_experiment(request):
 
         if experiment:
             messages.success(request, 'Experiment submitted successfully!', 'alert-success alert-dismissible')
-            return JsonResponse({'success': True})
+            return JsonResponse({'success': True, 'exp_id': experiment.id})
         else:
             messages.error(request, 'Failed to save experiment data')
             return JsonResponse({'success': False, 'message': 'Failed to save experiment data.'}, status=400)
