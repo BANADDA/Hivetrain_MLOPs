@@ -54,8 +54,8 @@
             </label>
         </div>
     </div>
-    <div class="center-container container card bg-transparent rounded" style="width: 100%;">
-        <div class="card-body">
+    <div class="center-container container bg-transparent rounded">
+        {% comment %} <div class="card-body"> {% endcomment %}
         {% comment %} <form id="experiment-form">
             {% csrf_token %} {% endcomment %}
             <!-- Section 1: Add Model Details -->
@@ -382,64 +382,62 @@
                     </div>
                 </div>
                 <!-- Section 3: Dataset Selection -->
-                <div class="col-md-12">
-                    <div class="mb-3">
-                        <label class="form-label">3. Dataset Selection</label>
-                        <div class="card">
-                            <div class="card-header" style="background-color: #02310D; color: white;">
-                                Provide link to your dataset
-                            </div>
-                            <div class="card-body">
-                                <!-- Selected Dataset Display -->
-                                <div id="selectedDatasetContainer" class="row align-items-center" style="display: none;">
-                                    <div class="col">
-                                        <p>Selected dataset:</p>
-                                    </div>
-                                    <div class="col-auto d-flex align-items-center">
-                                        <button id="removeDatasetBtn" class="btn btn-danger">
-                                            Remove 
-                                            <i class="fa fa-times"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <hr style="font-size: 15px; font-weight: bolder; color: black;">
-                                <div id="datasetModalTrigger">
-                                    <button id="toggleDatasetBtn" class="btn article px-2"><i class=" pl-2 fa fa-plus"></i> Add Dataset</button>
-                                </div>
-                                <p class="card-text pt-3">Want to add a new dataset? <span><a href="">Upload Dataset</a></span></p>
-                            </div>
+<div class="col-md-12">
+    <div class="mb-3">
+        <label class="form-label">3. Dataset Selection</label>
+        <div class="card" style="width: 1000px;"> <!-- Set the width to 700px -->
+            <div class="card-header" style="background-color: #02310D; color: white;">
+                Provide link to your dataset
+            </div>
+            <div class="card-body">
+                <!-- Dataset URL Input -->
+                <div class="form-group">
+                    <label for="dataset_url">Dataset URL:</label>
+                    <input type="text" class="form-control" id="dataset_url" placeholder="Enter dataset URL">
+                </div>
+                
+                <!-- Percentage Input for Train, Test, and Validation -->
+                <div class="form-group">
+                    <label for="train_percentage">Train Percentage:</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="train_percentage" placeholder="Enter train percentage" onchange="updatePercentage()">
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
                         </div>
-                        <!-- Dataset Selection Modal -->
-                        <div id="datasetModal" class="modal">
-                            <!-- Modal content -->
-                            <div class="modal-content">
-                                <div class="card">
-                                    <div class="card-header row justify-content-between">
-                                        <h5 class="card-title">Featured</h5>
-                                        <button class="close-button" style="color: red;">&times;</button>
-                                    </div>
-                                    <div class="card-body">
-                                        <h5 class="card-title">Special title treatment</h5>
-                                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                                        <div class="row justify-content-between">
-                                            <button class="btn btn-danger cancel-button">Cancel</button>
-                                            <a class="btn article">Go somewhere</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>                        
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="test_percentage">Test Percentage:</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="test_percentage" placeholder="Enter test percentage" onchange="updatePercentage()">
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="validation_percentage">Validation Percentage:</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="validation_percentage" placeholder="Enter validation percentage" onchange="updatePercentage()">
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
             </div>            
                 
         {% comment %} </form> {% endcomment %}
+    </div>   
     
             <!-- Next button -->
             <div class="row mb-3 pt-5 justify-content-center">
                 <a id="continueButton" type="submit" class="btn btn-lg article">Start Trainings <i class=" pl-2 fa fa-upload"></i></a>
             </div>
-    </div>   
 </div>
 </div>  
     <div class="text-center" style="display: none;" id="select-model-btn">
@@ -555,9 +553,8 @@
       
       /* Modal Content/Box */
       .modal-content {
-        background-color: #fefefe;
+        background-color: transparent;
         margin: 15% auto;
-        border: 1px solid #888;
         width: 50%; /* Could be more or less, depending on screen size */
       }
       
@@ -634,6 +631,42 @@
     }
 </style>
 <script>
+    
+    function updatePercentage() {
+        var trainPercentage = parseInt(document.getElementById('train_percentage').value);
+        var testPercentage = parseInt(document.getElementById('test_percentage').value);
+        var validationPercentage = parseInt(document.getElementById('validation_percentage').value);
+        
+        // Ensure individual percentages are within bounds
+        if (trainPercentage > 100) {
+            document.getElementById('train_percentage').value = 100;
+            trainPercentage = 100;
+        }
+        if (testPercentage > 100) {
+            document.getElementById('test_percentage').value = 100;
+            testPercentage = 100;
+        }
+        if (validationPercentage > 100) {
+            document.getElementById('validation_percentage').value = 100;
+            validationPercentage = 100;
+        }
+        
+        // Ensure total percentage does not exceed 100%
+        var totalPercentage = trainPercentage + testPercentage + validationPercentage;
+        if (totalPercentage > 100) {
+            var diff = totalPercentage - 100;
+            if (trainPercentage >= diff) {
+                trainPercentage -= diff;
+            } else if (testPercentage >= diff) {
+                testPercentage -= diff;
+            } else if (validationPercentage >= diff) {
+                validationPercentage -= diff;
+            }
+            document.getElementById('train_percentage').value = trainPercentage;
+            document.getElementById('test_percentage').value = testPercentage;
+            document.getElementById('validation_percentage').value = validationPercentage;
+        }
+    }
     // JavaScript for closing the modal when the close button or cancel button is clicked
 document.addEventListener("DOMContentLoaded", function() {
     const modal = document.getElementById("datasetModal");
