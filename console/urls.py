@@ -8,7 +8,7 @@ from .views import (create_model_and_start_training_ajax, datasets,
                     view_experiment)
 
 urlpatterns = [
-    path('', index, name='index'),
+    path('', experiment_list, name='index'),
     path('datasets/', datasets, name='datasets'),
     path('datasets/upload/', upload, name='upload'),
     path('datasets/<int:dataset_id>/eda/', eda_page, name='eda_page'),
