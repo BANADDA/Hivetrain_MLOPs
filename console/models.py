@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 
 class Dataset(models.Model):
@@ -6,24 +7,6 @@ class Dataset(models.Model):
     id = models.BigAutoField(primary_key=True)
     file_name = models.CharField(max_length=100)
     upload_date = models.DateTimeField(auto_now_add=True)
-    
-# class Project(models.Model):
-#     id = models.CharField(max_length=10, primary_key=True)
-#     project_name = models.CharField(max_length=100)
-#     description = models.TextField(default=None, blank=True, null=True)
-#     status = models.CharField(max_length=100)
-#     create_date = models.DateTimeField(auto_now_add=True)
-#     last_updated = models.DateTimeField(auto_now=True)
-
-#     def save(self, *args, **kwargs):
-#         if not self.id:
-#             last_project = Project.objects.order_by('-id').first()
-#             if last_project:
-#                 last_id = int(last_project.id[2:])  
-#                 self.id = 'UP{:04d}'.format(last_id + 1) 
-#             else:
-#                 self.id = 'UP0001'  
-#         super().save(*args, **kwargs)
 
 class Experiment(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -38,17 +21,63 @@ class Experiment(models.Model):
 
     def __str__(self):
         return self.name
+    
 class Model(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    experiment = models.OneToOneField(Experiment, on_delete=models.CASCADE)
-    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=100)
-    domain = models.CharField(max_length=250, null=True) 
-    # parameters = models.JSONField()
+    model_type = models.CharField(max_length=10, choices=[('new', 'New Model'), ('finetune', 'FineTune')], default='new')
+    created_at = models.DateTimeField(auto_now_add=False, default=timezone.now)
+    version = models.PositiveIntegerField(default=1)
+    formatted_version = models.CharField(max_length=20, blank=True)  # New field for storing formatted version
+    
+    def __str__(self):
+        return self.name
+
+    def update_formatted_version(self):
+        self.formatted_version = f"ML{self.id}v{self.version}"
+        self.save()
+
+class Domain(models.Model):
+    model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name="domains")
+    domain_type = models.CharField(max_length=50)  # e.g., 'Computer Vision', 'NLP'
+
+    def __str__(self):
+        return f'{self.domain_type} - {self.model.name}'
+
+class Task(models.Model):
+    domain = models.ForeignKey(Domain, on_delete=models.CASCADE, related_name="tasks")
+    task_name = models.CharField(max_length=100)  # e.g., 'Object Detection', 'Machine Translation'
+    configuration = models.JSONField(default=dict) # To store variable task-specific configuration dynamically
+
+    def __str__(self):
+        return f'{self.task_name} - {self.domain.domain_type}'
+
+class DatasetConfig(models.Model):
+    model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name="datasets")
+    dataset_url = models.URLField(max_length=1024)
+    train_percentage = models.IntegerField()
+    test_percentage = models.IntegerField()
+    validation_percentage = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.model.name} Dataset Configuration'
 
 class TrainingJob(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    model = models.ForeignKey(Model, on_delete=models.CASCADE)
-    status = models.CharField(max_length=100)
+    model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name="training_jobs")
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, null=True, blank=True, related_name="training_jobs")
+    dataset_config = models.ForeignKey(DatasetConfig, on_delete=models.SET_NULL, null=True, blank=True, related_name="training_jobs")  # Link to DatasetConfig
+    status = models.CharField(max_length=100, choices=[('queued', 'Queued'), ('training', 'Training'), ('completed', 'Completed'), ('error', 'Error')])  # Expanded status choices
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(null=True, blank=True)
+    metrics = models.JSONField(default=dict)  # To dynamically store training metrics
+    log_path = models.TextField(null=True, blank=True)  # Optional path to log file or direct log storage
+    
+    def save(self, *args, **kwargs):
+        creating = not self.pk
+        super().save(*args, **kwargs)
+        if creating:
+            # If creating a new instance, increment the model version and update the formatted version
+            self.model.version += 1
+            self.model.update_formatted_version()
+
+    def __str__(self):
+        return f'Training Job for {self.model.name} - Status: {self.status}'

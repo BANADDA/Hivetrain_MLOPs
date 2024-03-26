@@ -31,7 +31,7 @@
             <input type="search" placeholder="Search here..." aria-describedby="button-addon5" class="form-control">  
             <div class="input-group-append">  
               <a id="button-addon5" type="submit" class="btn article"> <i class="fa fa-search"> </i> </a>  
-            </div> 
+            </div>
         </form>
     </div>
   </div>
@@ -47,30 +47,51 @@
 
   {% comment %} <div class="container"> {% endcomment %}
     <div class="row">
-        {% for experiment in experiments %}
-        <div class="col-md-3 mb-4 experiment-card" data-status="{{ experiment.status }}">
-            <a href="{% url 'view_experiment' experiment.id %}">
-              <div class="card card-exp">
-                <img class="card-img-top mh-100" src="{{ experiment.random_image_url }}" alt="Card image cap">
-                <div class="card-body" style="max-height: 150px; overflow: hidden;">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h5 class="card-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0;">{{ experiment.name }}</h5>
-                        <p class="status" style="color: {% if experiment.status == 'active' %}darkgreen{% else %}darkred{% endif %}; font-weight: bold; margin-bottom: 0;">{{ experiment.get_status_display }}</p>
-                    </div>
-                    <div class="card-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        <p class="dataset">{{ experiment.description}}</p>
-                        {% comment %} <p>{{ experiment.description }}</p> {% endcomment %}
-                    </div>
-                </div>
+      {% for experiment in experiments %}
+      
+      <a href="{% url 'view_experiment' experiment.id %}">
+      <div class="col-md-3 mb-4 experiment-card" data-status="{{ experiment.status }}">
+          <div class="card card-exp">
+              <img class="card-img-top mh-100" src="{{ experiment.random_image_url }}" alt="Card image cap">
+              <div class="card-body" style="max-height: 150px; overflow: hidden;">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                      <h5 class="card-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0;">{{ experiment.name }}</h5>
+                      <p class="status" style="color: {% if experiment.status == 'active' %}darkgreen{% else %}darkred{% endif %}; font-weight: bold; margin-bottom: 0;">{{ experiment.get_status_display }}</p>
+                  </div>
+                  <div class="card-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                      <p class="dataset">{{ experiment.description}}</p>
+                      <!-- Include your experiment description here -->
+                  </div>
               </div>
-            </a>
+              <!-- Delete Icon -->
+<a href="javascript:void(0);" class="delete-icon" data-experiment-id="{{ experiment.id }}" data-experiment-name="{{ experiment.name }}" style="position: absolute; bottom: 10px; right: 10px; color: #A20F05;">
+  <i class="fa fa-trash" aria-hidden="true"></i>
+</a>
+          </div>
+      </div>
+      {% if forloop.counter|divisibleby:4 and not forloop.last %}
+      </div><div class="row"> <!-- Start a new row after every 4 experiments -->
+      {% endif %}
+      {% endfor %}
+  </div>
+  
+  <!-- Place the confirmation modal outside the loop, so it's only included once -->
+  <div id="deleteConfirmationModal" class="modal">
+    <div class="modal-content card">
+      <h5 class="card-header">Confirm Deletion</h5>
+      <div class="card-body">
+        <p class="card-text" id="deleteMessage">Deleting the experiment "<span id="experimentNamePlaceholder"></span>" will delete all models and training jobs associated with your model.</p>
+        <div class="modal-buttons justify-content-between" style="display: flex; gap: 10px;">
+          <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
+          <button id="confirmDelete" class="btn btn-danger">Delete</button>
         </div>
-        {% if forloop.counter|divisibleby:4 and not forloop.last %}
+      </div>
     </div>
-    <div class="row"> <!-- Start a new row after every 4 experiments -->
-        {% endif %}
-        {% endfor %}
-    </div>      
+  </div>
+  
+    
+</div>
+       
   {% comment %} </div> {% endcomment %}
   
 {% else %}
@@ -332,6 +353,41 @@
 .closebtn:hover {
   color: black;
 }
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Buttons inside the modal */
+.modal-content button {
+  margin-top: 15px;
+  padding: 10px;
+  width: 120px;
+}
+
+#confirmDelete {
+  background-color: red;
+  color: white;
+  border: none;
+}
+
+#cancelDelete {
+  background-color: gray;
+  color: white;
+  border: none;
+}
+
 </style>
 <script>
 // Get the modal
@@ -512,7 +568,89 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         activeButton.classList.add("active");
     }
-</script>
+      document.addEventListener("DOMContentLoaded", function () {
+          const deleteIcons = document.querySelectorAll(".delete-icon");
+          const modal = document.getElementById("deleteConfirmationModal");
+          const closeModal = modal.querySelector(".close");
+          const confirmDelete = document.getElementById("confirmDelete");
+          const cancelDelete = document.getElementById("cancelDelete");
+          const deleteMessage = modal.querySelector("#deleteMessage"); // Ensure you have a placeholder for the message
+          let currentExperimentId = null; // To keep track of the experiment to delete
+          let experimentName = ""; // To store the experiment's name for messaging
+
+          confirmDelete.addEventListener("click", function() {
+            if(currentExperimentId) {
+              console.log("XPxperiment selected for deletion.");
+                deleteExperiment(currentExperimentId); // Call delete function with the current ID
+            } else {
+                console.log("No experiment selected for deletion.");
+            }
+        });
+  
+          deleteIcons.forEach(icon => {
+              icon.addEventListener("click", function(e) {
+                  e.preventDefault(); // Prevent any default action
+                  currentExperimentId = this.dataset.experimentId; // Set the current experiment ID
+                  experimentName = this.dataset.experimentName; // Get the experiment's name
+                  deleteMessage.textContent = `Are you sure you want to delete the experiment "${experimentName}"? This action cannot be undone.`; // Update the modal message
+                  modal.style.display = "block"; // Show the modal
+              });
+          });
+  
+          // When the user clicks on <span> (x) or Cancel, close the modal
+          closeModal.onclick = cancelDelete.onclick = function() {
+              modal.style.display = "none";
+          }
+  
+          // Confirm Deletion
+    confirmDelete.addEventListener("click", function() {
+      if(currentExperimentId) {
+          deleteExperiment(currentExperimentId); // Call delete function with the current ID
+      }
+  });
+      });
+      function deleteExperiment(experimentId) {
+
+      // Log the experiment ID to the console (or perform any action you need with it)
+      console.log('Experiment ID to delete:', experimentId);
+        var url = `/experiment/delete/${experimentId}/`; 
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                window.location.reload(true);
+                //alert(data.message);
+            } else {
+                alert(data.message); // Show error message if deletion wasn't successful
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }   
+
+  </script>
 
 
 {% endblock %}

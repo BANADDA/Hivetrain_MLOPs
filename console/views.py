@@ -5,14 +5,17 @@ from datetime import *
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, DeleteView
 
 from . import utils
 # from .forms import (DatasetForm, ExperimentForm, ModelForm, ProjectForm,
 #                     TrainingJobForm)
-from .models import Dataset, Experiment, Model, TrainingJob
+from .models import (Dataset, DatasetConfig, Domain, Experiment, Model, Task,
+                     TrainingJob)
 
 
 def index(request):
@@ -56,14 +59,135 @@ def submit_experiment(request):
         messages.error(request, 'Only POST requests are allowed')
         return JsonResponse({'success': False, 'message': 'Only POST requests are allowed.'}, status=400)
 
+@csrf_exempt 
+@require_http_methods(["POST"])
+def delete_experiment(request, experiment_id):
+    try:
+        # Retrieve the experiment to be deleted
+        experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+        # Delete the experiment itself
+        experiment.delete()
+
+        # Add a success message
+        messages.success(request, f'Experiment "{experiment.name}" and all associated models and training jobs have been successfully deleted.')
+
+        # Redirect to the experiment list page or another appropriate page
+        return JsonResponse({
+            'success': True,
+            'message': 'Experiment deleted successfully.',
+        })
+    except Exception as e:
+        # Handle any exceptions that occur during deletion
+        return JsonResponse({
+            'success': False,
+            'message': 'Failed to delete experiment. Error: {}'.format(str(e))
+        }, status=500)
+
 def view_experiment(request, experiment_id):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
-    # Retrieve the model associated with the experiment
-    model = Model.objects.filter(experiment=experiment).first() 
-    # Retrieve training jobs associated with the model
-    training_jobs = TrainingJob.objects.filter(model=model) if model else []
-    datasets = Dataset.objects.all() 
-    return render(request, 'exps/experiment_details.html', {'experiment': experiment, 'model': model, 'training_jobs': training_jobs, 'datasets': datasets})
+    training_jobs = TrainingJob.objects.filter(experiment=experiment)
+    
+    latest_model = Model.objects.filter(training_jobs__in=training_jobs).order_by('-created_at').first()
+
+    datasets = Dataset.objects.all()
+
+    return render(request, 'exps/experiment_details.html', {
+        'experiment': experiment,
+        'latest_model': latest_model,  # Pass the specific model to focus on
+        'training_jobs': training_jobs,
+        'datasets': datasets
+    })
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def create_model_and_start_training_ajax(request):
+    # Decode JSON data from the request body
+    data = json.loads(request.body.decode('utf-8'))
+
+    # Direct mapping of form data to model fields
+    model_name = data.get('modelName', '')
+    # architecture = data.get('architecture', '')  # Assuming architecture is part of form data
+    model_type = data.get('modelType', 'new')  # Defaulting to 'new' if not provided
+    domain_type = data.get('modelDomain', '')
+    dataset_url = data.get('datasetURL', '')
+    train_percentage = data.get('trainPercentage', 0)
+    test_percentage = data.get('testPercentage', 0)
+    validation_percentage = data.get('validationPercentage', 0)
+    task_type = data.get('taskType', '')
+    task_configs = data.get('taskConfigs', {}),
+    experiment_id = data.get('experimentId')
+    
+    try:
+        experiment = Experiment.objects.get(id=experiment_id)
+    except Experiment.DoesNotExist:
+        return JsonResponse({'error': 'Experiment not found'}, status=404)
+
+    try:
+        # Create Model instance
+        model_instance = Model.objects.create(
+            name=model_name,
+            # architecture=architecture,
+            model_type=model_type,
+            created_at=timezone.now()
+        )
+
+        # Create Domain instance
+        domain_instance = Domain.objects.create(
+            model=model_instance,
+            domain_type=domain_type
+        )
+
+        # Create Task instance
+        task_instance = Task.objects.create(
+            domain=domain_instance,
+            task_name=task_type,
+            configuration=task_configs
+        )
+
+        # Create DatasetConfig instance
+        dataset_config_instance = DatasetConfig.objects.create(
+            model=model_instance,
+            dataset_url=dataset_url,
+            train_percentage=train_percentage,
+            test_percentage=test_percentage,
+            validation_percentage=validation_percentage
+        )
+
+        # Create TrainingJob instance
+        training_job_instance = TrainingJob.objects.create(
+            model=model_instance,
+            experiment=experiment,
+            dataset_config=dataset_config_instance,
+            status='queued',  # Assuming the job status starts as 'queued'
+        )
+        
+        monitor_url = reverse('monitor_training', args=[training_job_instance.id])
+
+
+        return JsonResponse({
+            "status": "success",
+            "message": f"Model '{data.get('modelName', '')}' and training job created successfully.",
+            "model_id": model_instance.id,
+            "training_job_id": training_job_instance.id,
+            "redirect_url": monitor_url
+        })
+    except Exception as e:
+        return JsonResponse({
+            "status": "error",
+            "message": str(e)
+        })
+        
+def monitor_training(request, training_job_id):
+    training_job = get_object_or_404(TrainingJob, pk=training_job_id)
+    # Optionally, fetch additional data related to the training job
+    # For example, training metrics stored in a related model or logs
+
+    context = {
+        'training_job': training_job,
+        # Include other context as needed, such as metrics or logs
+    }
+    return render(request, 'exps/monitor_training.html', context)
 
 def new_model(request):
     if request.method == 'POST':
@@ -165,119 +289,4 @@ def eda_page(request, dataset_id):
     except Dataset.DoesNotExist:
         messages.error(request, 'Dataset does not exist.')
         return redirect('datasets')
-
-# def trainingjob_detail(request, trainingjob_id):
-#     trainingjob = TrainingJob.objects.get(pk=trainingjob_id)
-#     return render(request, 'trainingjob_detail.html', {'trainingjob': trainingjob})
-
-# def projects(request):
-#     projects = Project.objects.all()
-#     return render(request, 'index_projects.html', {'projects': projects})
-
-# def new_project(request):
-#     return render(request, 'exps/no_exp.html')
-
-# def project_detail(request, project_id):
-#     project = get_object_or_404(Project, pk=project_id)
-#     experiments = Experiment.objects.filter(project=project)
-#     image_urls = [
-#         'https://optimine.com/wp-content/uploads/2023/04/how-to-learn-big-data-7-places-to-start-in-2022.jpg',
-#         'https://www.simplilearn.com/ice9/free_resources_article_thumb/data_analyticstrendsmin.jpg',
-#         'https://www.datamation.com/wp-content/uploads/2023/08/dm08172023-what-is-data-analytics-768x502.png'
-#     ]
-#     for experiment in experiments:
-#         experiment.random_image_url = random.choice(image_urls)
-#     return render(request, 'exps/exp.html', {'project': project, 'experiments': experiments})
-
-
-
-# Views for creating instances
-
-# Views for creating instances
-# def create_project(request):
-#     if request.method == 'POST':
-#         form = ProjectForm(request.POST)
-#         if form.is_valid():
-#             # Set the default status to 'active'
-#             form.instance.status = 'active'
-#             form.save()
-#             return redirect('projects')  # Redirect to projects list page
-#     else:
-#         form = ProjectForm()
-#     return render(request, 'projects/create_project.html', {'form': form})
-
-# def create_experiment(request):
-#     # project = get_object_or_404(Project, pk=project_id)
-#     experiments = Experiment.objects.filter(project=project)
-#     image_urls = [
-#         'https://optimine.com/wp-content/uploads/2023/04/how-to-learn-big-data-7-places-to-start-in-2022.jpg',
-#         'https://www.simplilearn.com/ice9/free_resources_article_thumb/data_analyticstrendsmin.jpg',
-#         'https://www.datamation.com/wp-content/uploads/2023/08/dm08172023-what-is-data-analytics-768x502.png'
-#     ]
-#     for experiment in experiments:
-#         experiment.random_image_url = random.choice(image_urls)
-#     if request.method == 'POST':
-#         # Initialize the form with both POST data and project_id
-#         form = ExperimentForm(request.POST)
-#         if form.is_valid():
-#             # Save the form with the project_id
-#             experiment = form.save(commit=False)
-#             # experiment.project_id = project_id  # Associate experiment with project
-#             experiment.save()
-#             return redirect('project_detail', project_id=project_id)
-#     else:
-#         # Initialize the form with the project_id in the initial data
-#         form = ExperimentForm(initial={'project': project_id})
-
-#     return render(request, 'exps/create_experiment.html', {'form': form, 'project': project})
-
-# def create_model(request, experiment_id):
-#     if request.method == 'POST':
-#         form = ModelForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('models', experiment_id=experiment_id)  # Redirect to models list page for the experiment
-#     else:
-#         form = ModelForm()
-#     return render(request, 'create_model.html', {'form': form})
-
-# def create_training_job(request, model_id):
-#     if request.method == 'POST':
-#         form = TrainingJobForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('training_jobs', model_id=model_id)  # Redirect to training jobs list page for the model
-#     else:
-#         form = TrainingJobForm()
-#     return render(request, 'create_training_job.html', {'form': form})
-
-# # Views for deleting instances
-
-# def delete_project(request, project_id):
-#     project = get_object_or_404(Project, id=project_id)
-#     if request.method == 'POST':
-#         project.delete()
-#         return redirect('projects')  # Redirect to projects list page
-#     return render(request, 'delete_project.html', {'project': project})
-
-# def delete_experiment(request, experiment_id):
-#     experiment = get_object_or_404(Experiment, id=experiment_id)
-#     if request.method == 'POST':
-#         experiment.delete()
-#         return redirect('experiments', project_id=experiment.project_id)  # Redirect to experiments list page for the project
-#     return render(request, 'delete_experiment.html', {'experiment': experiment})
-
-# def delete_model(request, model_id):
-#     model = get_object_or_404(Model, id=model_id)
-#     if request.method == 'POST':
-#         model.delete()
-#         return redirect('models', experiment_id=model.experiment_id)  # Redirect to models list page for the experiment
-#     return render(request, 'delete_model.html', {'model': model})
-
-# def delete_training_job(request, job_id):
-#     job = get_object_or_404(TrainingJob, id=job_id)
-#     if request.method == 'POST':
-#         job.delete()
-#         return redirect('training_jobs', model_id=job.model_id)  # Redirect to training jobs list page for the model
-#     return render(request, 'delete_training_job.html', {'job': job})
 

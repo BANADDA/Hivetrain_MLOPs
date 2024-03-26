@@ -1,9 +1,11 @@
 from django.contrib import admin
 from django.urls import path
 
-from .views import (datasets, delete_dataset, eda_page, experiment_list,
-                    get_datasets, index, model_detail, new_model,
-                    submit_experiment, upload, view_experiment)
+from .views import (create_model_and_start_training_ajax, datasets,
+                    delete_dataset, delete_experiment, eda_page,
+                    experiment_list, get_datasets, index, model_detail,
+                    monitor_training, new_model, submit_experiment, upload,
+                    view_experiment)
 
 urlpatterns = [
     path('', index, name='index'),
@@ -16,6 +18,9 @@ urlpatterns = [
     path('submit_experiment/', submit_experiment, name='submit_experiment'),
     path('submit_model/', new_model, name='submit_model'),
     path('experiment/<int:experiment_id>/', view_experiment, name='view_experiment'),
+    path('api/submit_form/', create_model_and_start_training_ajax, name='submit_form_ajax'),
+    path('training_jobs/<int:training_job_id>/monitor/', monitor_training, name='monitor_training'),
+    path('experiment/delete/<int:experiment_id>/', delete_experiment, name='delete_experiment'),
     # path('experiment/<int:experiment_id>/new_model/', new_model, name='new_model'),
     path('models/<int:model_id>/', model_detail, name='model_detail'),
 ]

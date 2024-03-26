@@ -10,10 +10,20 @@
     <div id="validationAlerts"></div>
     {% comment %} Conditionally render  model form {% endcomment %}
     
-    {% if model %}
-        <h2>{{model.name}}</h2>
-
-    {% else %}
+    <div id="validationAlerts"></div>
+    {% if latest_model %}
+    <script type="text/javascript">
+        {% with latest_model.training_jobs.first.id as trainingJobId %}
+            // Only attempt to redirect if a training job ID is available
+            {% if trainingJobId %}
+                var trainingJobId = "{{ trainingJobId }}";
+                window.location.href = "{% url 'monitor_training' trainingJobId %}";
+            {% else %}
+                console.log("No training jobs found for the latest model.");
+            {% endif %}
+        {% endwith %}
+    </script>
+{% else %}
     <div class="container card bg-white rounded mb-5">
         <div class="row justify-content-between align-content-between card-body custom-card-body">
           <div class="col-md">
@@ -61,9 +71,10 @@
             <!-- Section 1: Add Model Details -->
             <div class="mb-3">
                 <label for="model-name" class="form-label">1. Add Model Details</label>
-                <input type="text" class="form-control" placeholder="Enter Model Name">
+                <input type="text" class="form-control" id="model-name" placeholder="Enter Model Name">
+                <!-- Add the id="model-name" attribute here -->
                 {% comment %} <textarea class="form-control mt-2" id="model-description" rows="3" placeholder="Enter Model Description" required></textarea> {% endcomment %}
-            </div>
+            </div>            
             <div class="row">
                 <!-- Section 2: Model Domain -->
                 <div class="col-md-12">
@@ -947,29 +958,124 @@ document.addEventListener("DOMContentLoaded", function() {
     
     document.addEventListener('DOMContentLoaded', function () {
         var continueButton = document.querySelector('#continueButton');
+        var selectedDomain; // Variable to store the selected domain
+        var datasetURLInput = document.getElementById('dataset_url');
+        var trainPercentageInput = document.getElementById('train_percentage');
+        var testPercentageInput = document.getElementById('test_percentage');
+        var validationPercentageInput = document.getElementById('validation_percentage');
+        var selectedTaskSection; // Variable to store the selected task section
+    
+        // Add event listener to each domain button
+        document.querySelectorAll('.selectable-button').forEach(function(button) {
+            button.addEventListener('click', function() {
+                selectedDomain = this.textContent; // Set the selected domain to the button text
+                console.log('Selected Domain:', selectedDomain);
+                // If the selected domain is NLP or CV, show respective tasks
+                if (selectedDomain === 'Computer Vision') {
+                    showTaskSection('cv-tasks');
+                } else if (selectedDomain === 'NLP') {
+                    showTaskSection('nlp-tasks');
+                }
+            });
+        });
+
+        function showTaskSection(taskSectionId) {
+            if (selectedTaskSection) {
+                selectedTaskSection.style.display = 'none';
+                clearFormData(selectedTaskSection);
+            }
+            selectedTaskSection = document.getElementById(taskSectionId);
+            selectedTaskSection.style.display = 'block';
+        }
+        
+        function clearFormData(taskSection) {
+            var inputs = taskSection.querySelectorAll('input, select, textarea');
+            inputs.forEach(function(input) {
+                if (input.type !== 'checkbox') {
+                    input.value = '';
+                } else {
+                    input.checked = false;
+                }
+            });
+        }
+    
         continueButton.addEventListener('click', function (event) {
             // Prevent form submission
             event.preventDefault();
+            // Capture model type (New Model or FineTune)
+            // var modelType = document.querySelector('input[name="model"]:checked').value;
+    
+            // Capture selected domain from the active domain button
+            var selectedDomain = document.querySelector('.selectable-button.selected')?.textContent.trim();
     
             // Perform form validation
-            var validationResult = validateForm();
-            if (validationResult.isValid) {
-                // Gather form data
-                var formData = {
-                    modelName: document.getElementById('model-name').value,
-                    modelDescription: document.getElementById('model-description').value,
-                    modelDomain: document.getElementById('model-domain').value,
-                    selectedDatasetId: document.querySelector('input[name="selectedDataset"]:checked').getAttribute('data-id'),
-                    experiment_id: {{experiment.id}}
-                };
-                console.log('Form data: ', formData);
-                // Send form data to the server using AJAX
-                sendFormData(formData);
-            } else {
-                // Display validation errors in alert container
-                displayValidationAlerts(validationResult.messages);
+    
+            // Check if a domain is selected
+            if (!selectedDomain) {
+                console.error('Please select a domain!');
+                return;
             }
-        });
+    
+            // Check if dataset URL is provided
+            var datasetURL = datasetURLInput.value.trim();
+            if (!datasetURL) {
+                console.error('Please provide a dataset URL!');
+                return;
+            }
+
+            // Validate percentages
+        var trainPercentage = parseInt(document.getElementById('train_percentage').value);
+        var testPercentage = parseInt(document.getElementById('test_percentage').value);
+        var validationPercentage = parseInt(document.getElementById('validation_percentage').value);
+        if (trainPercentage + testPercentage + validationPercentage !== 100) {
+            console.error('Percentage values must add up to 100!');
+            return;
+        }
+    
+            // Capture task type and details
+        var taskType = ''; // Initialize task type
+        var taskDetails = {}; // Initialize task details object
+        var experimentId = "{{ experiment.id }}";
+        if (selectedDomain === 'NLP') {
+            document.querySelectorAll('#nlp-tasks .nlp-task-section').forEach(section => {
+                if (section.style.display !== 'none') {
+                    taskType = section.querySelector('.card-title').textContent; // Capture the task type
+                    section.querySelectorAll('input, select').forEach(input => {
+                        taskDetails[input.id] = input.value; // Capture task details
+                    });
+                }
+            });
+        } else if (selectedDomain === 'Computer Vision') {
+            document.querySelectorAll('#cv-tasks .cv-task-section').forEach(section => {
+                if (section.style.display !== 'none') {
+                    taskType = section.querySelector('.card-title').textContent; // Capture the task type
+                    section.querySelectorAll('input, select').forEach(input => {
+                        taskDetails[input.id] = input.value; // Capture task details
+                    });
+                }
+            });
+        }
+
+        // Compile form data
+        var formData = {
+            modelName: document.getElementById('model-name').value,
+           // modelType: modelType, // Model type (New Model or FineTune)
+            modelDomain: selectedDomain, // Selected domain
+            datasetURL: datasetURL, // Dataset URL
+            trainPercentage: trainPercentage, // Training set percentage
+            testPercentage: testPercentage, // Test set percentage
+            validationPercentage: validationPercentage, // Validation set percentage
+            taskType: taskType, // Task type
+            taskConfigs: taskDetails, // Task-specific details
+            experimentId: experimentId,
+        };
+
+        console.log('Form data:', formData);
+
+        // Placeholder for AJAX call or other form submission method
+        sendFormData(formData);
+    });
+
 
         function getCookie(name) {
             var cookieValue = null;
@@ -986,44 +1092,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             }
             return cookieValue;
-        }        
-    
-        function sendFormData(formData) {
-            // Create a new XMLHttpRequest object
-            var xhr = new XMLHttpRequest();
-        
-            // Configure the request
-            xhr.open('POST', '/submit_model/', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            
-            // Get CSRF token from cookies
-            var csrftoken = getCookie('csrftoken');
-        
-            // Set CSRF token in request header
-            xhr.setRequestHeader('X-CSRFToken', csrftoken);
-        
-            // Define the callback function
-            xhr.onload = function () {
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    // Success callback
-                    var response = JSON.parse(xhr.responseText);
-                    if (response.success) {
-                        // Handle success response
-                        alert('Model submitted successfully!');
-                        // Optionally, you can redirect to another page or perform additional actions
-                    } else {
-                        // Handle failure response
-                        alert('Failed to submit model: ' + response.message);
-                    }
-                } else {
-                    // Error callback
-                    alert('Error while submitting model: ' + xhr.statusText);
-                }
-            };
-        
-            // Send the request with form data
-            xhr.send(JSON.stringify(formData));
         }
+
         
     
         function validateForm() {
@@ -1079,6 +1149,177 @@ document.addEventListener("DOMContentLoaded", function() {
             }, 2000);
         }
     });
+
+    function sendFormData(formData) {
+        console.log('Sending form data:', formData);
+        
+        fetch('/api/submit_form/', {  // Update this URL based on your `urls.py` configuration
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),  // Ensure you have a function to get the CSRF token
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                displayMessage(data.message, 'success');
+                // Redirect to the monitor URL
+               window.location.href = data.redirect_url;
+            } else {
+                displayMessage(data.message, 'error');
+            }
+        }).catch(error => console.log('Error:', error));
+    }
+
+    function displayMessage(message, type) {
+        // Example: Append a message to a div with id='messages'
+        const messagesDiv = document.getElementById('messages');
+        const messageElement = document.createElement('div');
+        
+        if (type === 'success') {
+            messageElement.className = 'alert alert-success'; // Bootstrap class for success
+        } else if (type === 'error') {
+            messageElement.className = 'alert alert-danger'; // Bootstrap class for error
+        }
+    
+        messageElement.textContent = message;
+        messagesDiv.appendChild(messageElement);
+    
+        // Optionally, add logic to automatically dismiss the message after a certain period
+        setTimeout(() => {
+            messagesDiv.removeChild(messageElement);
+        }, 5000);
+
+    }
+    
+    // Function to get CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }    
+
+     // function sendFormData(formData) {
+            // Here, you'll implement the AJAX call or Fetch API request
+            // This is a placeholder function to demonstrate the process
+    
+      //      console.log('Sending form data:', formData);
+    
+            // Example with Fetch API
+            /*
+            fetch('/api/submit_form', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Include other headers as needed
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => console.log('Success:', data))
+            .catch((error) => console.error('Error:', error));
+            */
+     //   }
+    
+        // Implement captureSelectedDomain() and captureDomainSpecificDetails() as needed
+      /*  function captureSelectedDomain() {
+            // Initialize variable to hold the selected domain
+            let selectedDomain = '';
+        
+            // Check if the "Computer Vision" button has the 'selected' class
+            if (document.getElementById('cv-button').classList.contains('selected')) {
+                selectedDomain = 'Computer Vision';
+            }
+            // Check if the "NLP" button has the 'selected' class
+            else if (document.getElementById('nlp-button').classList.contains('selected')) {
+                selectedDomain = 'NLP';
+            }
+        
+            return selectedDomain;
+        }
+        
+    
+        function captureDomainSpecificDetails() {
+            const domainDetails = {};
+        
+            // Determine the selected domain
+            const selectedDomain = captureSelectedDomain();
+        
+            if (selectedDomain === 'NLP') {
+                // Capture details from the NLP tasks section if NLP is selected
+                const nlpSection = document.getElementById('nlp-tasks');
+                if (nlpSection.style.display !== 'none') {
+                    // Assuming there's only one visible section at a time
+                    const visibleSection = nlpSection.querySelector('.nlp-task-section:not([style*="display: none"])');
+                    if (visibleSection) {
+                        // Example for capturing data from the Machine Translation section
+                        if (visibleSection.id === 'machine-translation-section') {
+                            domainDetails.task = 'Machine Translation';
+                            domainDetails.sourceLanguage = document.getElementById('source_language').value;
+                            domainDetails.targetLanguage = document.getElementById('target_language').value;
+                            domainDetails.modelArchitecture = document.getElementById('model_architecture').value;
+                            // Capture evaluation metrics similarly
+                        }
+                        else if (visibleSection.id === 'speech-recognition-section') {
+                            domainDetails.task = 'Speech Recognition';
+                            domainDetails.audioInputFormat = document.getElementById('audio_input_format').value;
+                            domainDetails.modelArchitecture = document.getElementById('model_architecture').value; // Assuming unique IDs or adapt as necessary
+                            domainDetails.languageModel = document.getElementById('language_model').value;
+                            // Capture evaluation metrics similarly
+                        }
+                        
+                        // Placeholder for Named Entity Recognition task
+                        else (visibleSection.id === 'named-entity-recognition-section') {
+                            domainDetails.task = 'Named Entity Recognition';
+                            domainDetails.inputTextFormat = document.getElementById('input_text_format').value;
+                            domainDetails.modelArchitecture = document.getElementById('model_architecture').value; // Adjust ID as necessary
+                            domainDetails.entityTypes = document.getElementById('entity_types').value;
+                            // Capture evaluation metrics similarly
+                        }
+                    }
+                }
+            } else if (selectedDomain === 'Computer Vision') {
+                // Capture details from the CV tasks section if Computer Vision is selected
+                const cvSection = document.getElementById('cv-tasks');
+                if (cvSection.style.display !== 'none') {
+                    // Assuming there's only one visible section at a time
+                    const visibleSection = cvSection.querySelector('.cv-task-section:not([style*="display: none"])');
+                    if (visibleSection) {
+                        // Example for capturing data from the Object Detection section
+                        if (visibleSection.id === 'object-detection-section') {
+                            domainDetails.task = 'Object Detection';
+                            // Capture specific details like input image size, model architecture, etc.
+                            domainDetails.inputImageSize = document.getElementById('input_image_size').value;
+                            domainDetails.modelArchitecture = document.getElementById('model_architecture').value;
+                            // Capture additional details similarly
+                        }
+                        else (visibleSection.id === 'image-classification-section') {
+                            domainDetails.task = 'Image Classification';
+                            domainDetails.numLayers = document.getElementById('num_layers').value;
+                            domainDetails.convKernelSize = document.getElementById('conv_kernel_size').value;
+                            domainDetails.numFilters = document.getElementById('num_filters').value;
+                            domainDetails.learningRate = document.getElementById('learning_rate').value; // Assuming unique IDs or adapt as necessary
+                            domainDetails.batchSize = document.getElementById('batch_size').value;
+                            domainDetails.optimizer = document.getElementById('optimizer').value;
+                            // Capture data augmentation techniques similarly
+                        }
+                    }
+                }
+            }
+        
+            return domainDetails;
+        }*/
     
 </script>
 {% endblock %}

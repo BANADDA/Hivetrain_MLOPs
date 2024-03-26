@@ -1,0 +1,604 @@
+{% extends 'new_project.html' %}
+{% load static %}
+
+{% block exp_name %}
+{{experiment.name}}
+{% endblock %}
+
+{% block exp_block %}
+<div class="container">
+    <h1 style="font-size: 25px; font-weight: bold;">{{ training_job.model.name }}</h1>
+    <hr style="margin-top: 5px; margin-bottom: 8px; height: 0.5px; border: none; background-color: black;">
+    
+    <div class="card mt-3 mb-5">
+        <div class="card-body" style="display: flex; align-items: center; justify-content: space-around; height: auto;">
+            <!-- Adjust the row to ensure centering -->
+            <div class="row justify-content-center align-items-center" style="text-align: center; flex: 1;">
+                <!-- Adjust col and p tags -->
+                <div class="col" style="margin: 0;">
+                    <h6 style="margin: 5px 0; font-weight: 600;">Experiment</h6> <!-- Reduce space -->
+                    <p style="margin: 5px 0; color: #444; font-weight: 500; font-size: 14px;">{{training_job.experiment.name}}</p> <!-- Reduce space -->
+                </div>
+            </div>
+            <div style="border-left: 2px solid #444; flex: 0 0 2px; align-self: stretch;"></div>
+            <div style="text-align: center; flex: 1;">
+                <!-- Adjust col and p tags -->
+                <div class="col" style="margin: 0;">
+                    <h6 style="margin: 5px 0; font-weight: 600;">Created by</h6> <!-- Reduce space -->
+                    <p style="margin: 5px 0; color: #444; font-weight: 500; font-size: 14px;">Mubarak Banadda</p> <!-- Reduce space -->
+                </div>
+            </div>
+            <div style="border-left: 2px solid #444; flex: 0 0 2px; align-self: stretch;"></div>
+            <div style="text-align: center; flex: 1;">
+                <!-- Adjust col and p tags -->
+                <div class="col" style="margin: 0;">
+                    <h6 style="margin: 5px 0; font-weight: 600;">Created on</h6> <!-- Reduce space -->
+                    <p style="margin: 5px 0; color: #444; font-weight: 500; font-size: 14px;">{{training_job.start_time}}</p> <!-- Reduce space -->
+                </div>
+            </div>
+            <div style="border-left: 2px solid #444; flex: 0 0 2px; align-self: stretch;"></div>
+            <div style="text-align: center; flex: 1;">
+                <div class="col" style="margin: 0;">
+                    <h6 style="margin: 5px 0; font-weight: 600;">Model Version</h6> <!-- Reduce space -->
+                    <p style="margin: 5px 0; color: #444; font-weight: 500; font-size: 14px;">{{training_job.model.formatted_version}}</p> <!-- Reduce space -->
+                </div>
+            </div>
+            <div style="border-left: 2px solid #444; flex: 0 0 2px; align-self: stretch;"></div>
+            <div style="text-align: center; flex: 1;">
+                <div class="col" style="margin: 0;">
+                    <h6 style="margin: 5px 0; font-weight: 600;">Job Status</h6> <!-- Reduce space -->
+                    <p style="margin: 5px 0; color: #444; font-weight: 500; font-size: 14px;">{{training_job.status}}</p> <!-- Reduce space -->
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- Display other training job details here -->
+<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="btn-group mr-2" role="group" aria-label="First group">
+        <button type="button" class="btn article uniform-btn">Activities</button>
+    </div>
+    <div class="btn-group mr-2" role="group" aria-label="Second group">
+        <button type="button" class="btn article-outline uniform-btn">Analysis</button>
+    </div>
+    <div class="btn-group" role="group" aria-label="Third group">
+        <button type="button" class="btn article-outline uniform-btn">Logs</button>
+    </div>
+</div>
+<div class="card mt-2">
+    <h5 id="card-header" class="card-header" style="font-weight: 700; font-size: 14px; background: #036B03; color: aliceblue;">Monitor recent training activities</h5>
+    <div class="card-body">
+        <div id="activities-content" class="content-section">
+            <div class="table-responsive">
+                <table id="example" style="width:100%" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Model Name</th>
+                            <th>Version</th>
+                            <th>Start Time</th>
+                            <th>Last Updated</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- For "Completed" status -->
+                        <tr>
+                            <td>AlphaNet</td>
+                            <td>ML18v1</td>
+                            <td>2023-03-01 08:00</td>
+                            <td>2023-03-02 12:30</td>
+                            <td>Completed</td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm">Retrain</button>
+                                <button type="button" class="btn btn-success btn-sm">Export</button>
+                            </td>
+                        </tr>
+                        <!-- For "Queued" status -->
+                        <tr>
+                            <td>BetaFlow</td>
+                            <td>ML18v2</td>
+                            <td>2023-03-05 09:15</td>
+                            <td>2023-03-06 11:45</td>
+                            <td>Queued</td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm" disabled>Retrain</button>
+                                <button type="button" class="btn btn-success btn-sm" disabled>Export</button>
+                            </td>
+                        </tr>
+                        <!-- For "In Progress" status -->
+                        <tr>
+                            <td>GammaGraph</td>
+                            <td>ML18v3</td>
+                            <td>2023-03-10 14:00</td>
+                            <td>2023-03-12 16:00</td>
+                            <td>In Progress</td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm" disabled>Retrain</button>
+                                <button type="button" class="btn btn-success btn-sm" disabled>Export</button>
+                            </td>
+                        </tr>
+                        <!-- For "Failed" status -->
+                        <tr>
+                            <td>DeltaData</td>
+                            <td>ML18v5</td>
+                            <td>2023-03-15 10:00</td>
+                            <td>2023-03-17 09:00</td>
+                            <td>Failed</td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm">Retrain</button>
+                                <button type="button" class="btn btn-success btn-sm" disabled>Export</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="analysis-content" class="content-section" style="display: none;">
+            <!-- Content for analysis -->
+            <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th scope="col">Model Name</th>
+                    <th scope="col">Model Id</th>
+                    <th scope="col">Created at</th>
+                    <th scope="col">Last Updated</th>
+                    <th scope="col">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="table-success">
+                    <th>GammaGraph</th>
+                    <td>ML18v3</td>
+                    <td>2023-03-01 08:00</td>
+                    <td>2023-03-02 12:30</td>
+                    <td>In progress</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="card">
+                <div class="card-body">
+                    <div class="container">
+                  <h5 class="card-title">ML18v3 training/loss</h5>
+                  <div style="height: 400px; width: 100%;">
+                    <canvas id="trainingChart"></canvas>
+                </div>
+                <div style="height: 400px; width: 100%;">
+                    <canvas id="lossChart"></canvas>
+                </div> 
+                    </div>
+                    <div class="row pt-5">
+                        <div class="col-sm-6">
+                          <div class="card">
+                            <div class="card-body">
+                                <div style="height: 400px; width: 100%;">
+                                <canvas id="accuracyHistogram"></canvas>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-sm-6">
+                          <div class="card">
+                            <div class="card-body">
+                                <div style="height: 400px; width: 100%;">
+                                    <canvas id="modelPerformanceOverTime"></canvas>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>                         
+                </div>
+                
+                <div style="height: 400px; width: 100%;">
+                    <canvas id="validationLossChart"></canvas>
+                </div>
+              </div>
+        </div>
+                
+        <div id="logs-content" class="content-section" style="display: none;">
+            <!-- Content for logs -->
+            <p>No training logs available.</p>
+        </div>
+    </div>
+    
+  </div>
+
+<!-- Placeholder for additional data like metrics or logs -->
+<div id="metrics"></div>
+</div>
+
+<style>
+    .status-failed {
+        background-color: #ffcccc; /* Light red for failed rows */
+    }
+    .status-completed {
+        background-color: #B7FAB7; /* Light green for completed rows */
+    }
+    button.article {
+        background: #025A42 !important;
+        color: #fff !important;
+        padding: 5px 10px; /* Adjust padding as needed */
+    }
+    button.article-outline {
+    background: transparent !important;
+    border: 2px solid #025A42 !important; /* Outline color */
+    color: #025A42 !important; /* Text color */
+    padding: 5px 10px; /* Adjust padding as needed */
+    }
+
+    button.article-outline:hover {
+    background-color: #025A42 !important; /* Background color on hover */
+    color: #fff !important; /* Text color on hover */
+    }
+    .uniform-btn {
+        width: 150px; /* Adjust the width based on your preference */
+    }
+    @media (max-width: 768px) {
+        .card-body {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .card-body > div:not(:first-child) {
+            border-left: none;
+            border-top: 2px solid #444;
+            margin-top: 10px;
+        }
+        .container h1 {
+            margin-top: 60px; 
+            font-size: 20px; /* Smaller font size on smaller screens */
+        }
+    h1, hr {
+        display: block; /* Ensure they are visible */
+        font-size: 20px; /* Adjust size as necessary */
+    }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('modelPerformanceOverTime').getContext('2d');
+        const modelPerformanceOverTime = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Model Accuracy',
+                    data: [92, 93, 94, 93.5, 94.5, 95, 94.8, 95.2, 95.5, 96, 95.7, 96.2], // Dummy accuracy percentages
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    fill: false,
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: 'Accuracy (%)'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Monthly Model Accuracy Throughout the Year',
+                        font: {
+                            size: 18
+                        }
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        });
+    });    
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctxValidationLoss = document.getElementById('validationLossChart').getContext('2d');
+        const validationLossChart = new Chart(ctxValidationLoss, {
+            type: 'line',
+            data: {
+                labels: ['Epoch 1', 'Epoch 2', 'Epoch 3', 'Epoch 4', 'Epoch 5', 'Epoch 6', 'Epoch 7', 'Epoch 8', 'Epoch 9', 'Epoch 10', 'Epoch 11', 'Epoch 12', 'Epoch 13', 'Epoch 14', 'Epoch 15'],
+                datasets: [
+                    {
+                        label: 'ML18v1',
+                        data: [0.4, 0.38, 0.37, 0.36, 0.34, 0.32, 0.30, 0.28, 0.27, 0.26, 0.25, 0.24, 0.23, 0.22, 0.21],
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        fill: false,
+                    },
+                    {
+                        label: 'ML18v2',
+                        data: [0.42, 0.48, 0.46, 0.45, 0.43, 0.42, 0.40, 0.39, 0.38, 0.37, 0.36, 0.35, 0.34, 0.33, 0.32],
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        fill: false,
+                    },
+                    {
+                        label: 'ML18v3',
+                        data: [0.4, 0.47, 0.48, 0.46, 0.44, 0.42, 0.40, 0.39, 0.37, 0.35, 0.34, 0.32, 0.31, 0.29, 0.28],
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        fill: false,
+                    },
+                    {
+                        label: 'ML18v4',
+                        data: [0.39, 0.53, 0.51, 0.52, 0.54, 0.56, 0.58, 0.60, 0.62, 0.61, 0.59, 0.57, 0.55, 0.53, 0.51],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        fill: false,
+                    },
+                    {
+                        label: 'ML18v5',
+                        data: [0.35, 0.37, 0.39, 0.41, 0.43, 0.45, 0.47, 0.49, 0.50, 0.52, 0.54, 0.56, 0.58, 0.60, 0.62],
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        fill: false,
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: 'Validation Loss'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Validation Loss Across Model Versions',
+                        font: {
+                            size: 18
+                        }
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        });
+    });            
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctxHistogram = document.getElementById('accuracyHistogram').getContext('2d');
+        const accuracyHistogram = new Chart(ctxHistogram, {
+            type: 'bar',
+            data: {
+                labels: ['ML18v1', 'ML18v2', 'ML18v3', 'ML18v4', 'ML18v5'], // Model versions
+                datasets: [{
+                    label: 'Maximum Accuracy',
+                    data: [0.93, 0.65, 0.80, 0.45, 0.72], // Maximum accuracy for each version
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                          display: true,
+                          text: 'Accuracy (%)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false // Adjust based on whether you want to display the dataset label as a legend
+                    },
+                    title: {
+                        display: true,
+                        text: 'Maximum Accuracy per Model Version',
+                        font: {
+                            size: 18
+                        }
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        });
+    });    
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('trainingChart').getContext('2d');
+        const trainingChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15'],
+                datasets: [{
+                    label: 'Training Accuracy',
+                    data: [0.55, 0.63, 0.70, 0.75, 0.78, 0.81, 0.83, 0.85, 0.87, 0.88, 0.89, 0.90, 0.91, 0.92, 0.93],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    fill: false,
+                }, {
+                    label: 'Validation Accuracy',
+                    data: [0.50, 0.58, 0.64, 0.68, 0.71, 0.73, 0.74, 0.75, 0.75, 0.76, 0.76, 0.76, 0.76, 0.75, 0.75],
+                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1,
+                    fill: false,
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                          display: true,
+                          text: 'Accuracy (%)',
+                          suggestedMax: 100 // Adjust based on your accuracy scale (0 to 100% if your data is in percentage)
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    tooltip: {
+                        position: 'nearest',
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                elements: {
+                    line: {
+                        tension: 0.3 // Adds some smoothness to the line
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('lossChart').getContext('2d'); // Ensure you have a canvas with id="lossChart"
+        const lossChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15'],
+                datasets: [{
+                    label: 'Training Loss',
+                    data: [0.65, 0.60, 0.55, 0.50, 0.45, 0.40, 0.35, 0.30, 0.28, 0.25, 0.23, 0.21, 0.19, 0.17, 0.15],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    fill: false,
+                }, {
+                    label: 'Validation Loss',
+                    data: [0.70, 0.68, 0.67, 0.66, 0.65, 0.65, 0.64, 0.64, 0.64, 0.65, 0.66, 0.67, 0.68, 0.70, 0.72], // Notice the plateau and increase, indicating issues
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1,
+                    fill: false,
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                          display: true,
+                          text: 'Loss',
+                        },
+                        suggestedMin: 0, // Assuming loss values won't be negative
+                    }
+                },
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    tooltip: {
+                        position: 'nearest',
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                elements: {
+                    line: {
+                        tension: 0.3 // Adds some smoothness to the line
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        });
+    });    
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('#example tbody tr');
+    
+        rows.forEach(row => {
+            const status = row.cells[4].textContent.trim();
+            console.log(status); // Log the status to debug
+            if (status === 'Failed') {
+                row.classList.add('status-failed');
+            } else if (status === 'Completed') {
+                console.log('Adding completed class to row'); // Debugging log
+                row.classList.add('status-completed');
+            }
+        });        
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.btn-toolbar .btn');
+        const cardHeader = document.getElementById('card-header');
+        const activitiesContent = document.getElementById('activities-content');
+        const analysisContent = document.getElementById('analysis-content');
+        const logsContent = document.getElementById('logs-content');
+    
+        // Function to initialize DataTables
+        function initializeDataTables() {
+            if ($.fn.DataTable.isDataTable('#example')) {
+                $('#example').DataTable().destroy();
+            }
+            $('#example').DataTable({
+                "pagingType": "full_numbers" // Optional: for full pagination controls
+            });
+        }
+    
+        // Function to hide all content sections
+        function hideAllContent() {
+            activitiesContent.style.display = 'none';
+            analysisContent.style.display = 'none';
+            logsContent.style.display = 'none';
+        }
+    
+        buttons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Update button styles
+                buttons.forEach(btn => {
+                    btn.classList.remove('article');
+                    btn.classList.add('article-outline');
+                });
+                this.classList.remove('article-outline');
+                this.classList.add('article');
+    
+                // Hide all sections and show the relevant one
+                hideAllContent();
+                if (this.textContent.trim() === 'Activities') {
+                    cardHeader.textContent = 'Monitor recent training activities';
+                    activitiesContent.style.display = 'block';
+                    initializeDataTables(); // Initialize DataTables for the "Activities" section
+                } else if (this.textContent.trim() === 'Analysis') {
+                    cardHeader.textContent = 'View model analytics';
+                    analysisContent.style.display = 'block';
+                } else if (this.textContent.trim() === 'Logs') {
+                    cardHeader.textContent = 'Monitor model training logs';
+                    logsContent.style.display = 'block';
+                }
+            });
+        });
+    
+        // Initially check if Activities content is visible, then initialize DataTables
+        if(activitiesContent.style.display === 'block') {
+            initializeDataTables();
+        }
+    });
+    
+    // Periodically fetch and update training job data
+    function fetchTrainingJobData() {
+        fetch(`/api/training_jobs/${{ training_job.id }}/`)
+        .then(response => response.json())
+            .then(data => {
+                // Update page elements with the latest data
+                document.getElementById('status').textContent = data.status;
+                // Other updates
+            })
+            .catch(error => console.error('Error fetching training job data:', error));
+    }
+    
+    setInterval(fetchTrainingJobData, 5444); // Update every 5 seconds
+    </script>
+    
+    
+{% endblock %}
