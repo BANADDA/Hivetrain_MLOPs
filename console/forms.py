@@ -1,59 +1,46 @@
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit
+# forms.py
+
 from django import forms
+from django.contrib.auth.forms import (AuthenticationForm, UserCreationForm,
+                                       UsernameField)
+from django.contrib.auth.models import User
+from django.utils.translation import gettext
+from django.utils.translation import gettext_lazy as _
 
-from .models import Dataset, Experiment, Model, Project, TrainingJob
 
-
-class DatasetForm(forms.ModelForm):
+# Default user creation form
+class SignUpForm(UserCreationForm):
+    password1 = forms.CharField(
+        label="Password", widget=forms.PasswordInput(attrs={"class": "form-control"})
+    )
+    password2 = forms.CharField(
+        label="Confirm Password (again)",
+        widget=forms.PasswordInput(attrs={"class": "form-control"}),
+    )
     class Meta:
-        model = Dataset
-        fields = ['file_name']  # Add any additional fields as needed
+        model = User
+        fields = ["username", "first_name", "last_name", "email"]
+        labels = {
+            "first_name": "First Name",
+            "last_name": "Last Name",
+            "email": "Email",
+        }
+        widgets = {
+            "username": forms.TextInput(attrs={"class": "form-control"}),
+            "first_name": forms.TextInput(attrs={"class": "form-control"}),
+            "last_name": forms.TextInput(attrs={"class": "form-control"}),
+            "email": forms.EmailInput(attrs={"class": "form-control"}),
+        }
 
-
-class ProjectForm(forms.ModelForm):
-    class Meta:
-        model = Project
-        fields = ['project_name', 'description', 'status']  # Customize the fields displayed in the form
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_method = 'post'
-        self.helper.add_input(Submit('submit', 'Create Project'))
-
-        # Layout definition
-        self.helper.layout = Layout(
-            'project_name',
-            'description',
-            'status',
-        )
-class ExperimentForm(forms.ModelForm):
-    class Meta:
-        model = Experiment
-        fields = ['name', 'description', 'dataset']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_method = 'post'
-        self.helper.add_input(Submit('submit', 'Create Experiment'))
-        self.helper.layout = Layout(
-            'name',
-            'description',
-            'dataset',
-        )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['dataset'].queryset = Dataset.objects.all()
-
-class ModelForm(forms.ModelForm):
-    class Meta:
-        model = Model
-        fields = ['name', 'parameters']  # Add any additional fields as needed
-
-class TrainingJobForm(forms.ModelForm):
-    class Meta:
-        model = TrainingJob
-        fields = ['status', 'end_time']  # Add any additional fields as needed
+# Default authentication form
+class LoginForm(AuthenticationForm):
+    username = UsernameField(
+        widget=forms.TextInput(attrs={"autofocus": True, "class": "form-control"})
+    )
+    password = forms.CharField(
+        label=_("Password"),
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={"autocomplete": "current-password", "class": "form-control"}
+        ),
+    )

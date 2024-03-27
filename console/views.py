@@ -3,13 +3,17 @@ import random
 from datetime import *
 
 from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, DeleteView
+
+from console.forms import LoginForm, SignUpForm
 
 from . import utils
 # from .forms import (DatasetForm, ExperimentForm, ModelForm, ProjectForm,
@@ -18,16 +22,85 @@ from .models import (Dataset, DatasetConfig, Domain, Experiment, Model, Task,
                      TrainingJob)
 
 
+def search_experiments(request):
+    query = request.GET.get('query', '')
+    if query:
+        experiments = Experiment.objects.filter(name__icontains=query)
+    else:
+        experiments = Experiment.objects.all()
+
+    experiments_data = list(experiments.values('id', 'name', 'description'))  # Example fields you might want to include
+    return JsonResponse(experiments_data, safe=False)
+
 def index(request):
     return render(request, 'index.html', {})
 
+# Dashboard
+def dashboard(request):
+    if request.user.is_authenticated:
+        user = request.user
+        full_name = user.get_full_name()
+        return render(
+            request,
+            "dashboard.html",
+            {"full_name": full_name},
+        )
+    else:
+        return HttpResponseRedirect("/login/")
+
+# Signup
+def user_signup(request):
+    if not request.user.is_authenticated:
+        if request.method == "POST":
+            form = SignUpForm(request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(
+                    request, "Congratulations!! You have been successfully registered."
+                )
+                # Redirect to the login page
+                return HttpResponseRedirect("/login/")  # Make sure to use return here
+        else:
+            form = SignUpForm()
+        return render(request, "auth/signup.html", {"form": form})
+    else:
+        return HttpResponseRedirect("/experiments/")
+
+# Login
+def user_login(request):
+    if not request.user.is_authenticated:
+        if request.method == "POST":
+            form = LoginForm(request=request, data=request.POST)
+            if form.is_valid():
+                uname = form.cleaned_data["username"]
+                upass = form.cleaned_data["password"]
+                user = authenticate(username=uname, password=upass)
+                if user is not None:
+                    login(request, user)
+                    messages.success(request, "Logged in Successfully !!")
+                    return HttpResponseRedirect("/experiments/")
+        else:
+            form = LoginForm()
+        return render(request, "auth/login.html", {"form": form})
+    else:
+        return HttpResponseRedirect("/experiments/")
+
+# Logout
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect("/login/")
+
+@login_required
 def datasets(request):
     # Fetch all dataset objects from the database
     datasets = Dataset.objects.all()
     return render(request, 'datasets.html', {'datasets': datasets})
 
+# Home page
+@login_required
 def experiment_list(request):
-    experiments = Experiment.objects.all()
+    # Filter experiments to only include those belonging to the current user
+    experiments = Experiment.objects.filter(user=request.user)
     image_urls = [
         'https://optimine.com/wp-content/uploads/2023/04/how-to-learn-big-data-7-places-to-start-in-2022.jpg',
         'https://www.simplilearn.com/ice9/free_resources_article_thumb/data_analyticstrendsmin.jpg',
@@ -37,29 +110,44 @@ def experiment_list(request):
         experiment.random_image_url = random.choice(image_urls)
     return render(request, 'exps/exp.html', {'experiments': experiments})  # Change 'experiment' to 'experiments'
 
+@login_required
 def submit_experiment(request):
     if request.method == 'POST':
-        experiment_name = request.POST.get('experimentName')
-        experiment_description = request.POST.get('experimentDescription')
+        experiment_name = request.POST.get('experimentName').strip()  # Ensure to strip leading and trailing spaces
+        experiment_description = request.POST.get('experimentDescription').strip()  # Ensure to strip leading and trailing spaces
+        created_at = timezone.now()
         
-        experiment = Experiment.objects.create(name=experiment_name, description=experiment_description)
+        # Check if the experiment name and description are not empty
+        if not experiment_name or not experiment_description:
+            # Return error response if either field is empty
+            return JsonResponse({'success': False, 'message': 'Experiment name and description cannot be empty.'}, status=400)
+
+        # Proceed with creating the experiment if validation passes
+        experiment = Experiment.objects.create(
+            name=experiment_name,
+            description=experiment_description,
+            created_at=created_at,
+            user=request.user
+        )
 
         if experiment:
             # Add success message with experiment name
-            messages.success(request, f'Experiment {experiment_name} created successfully', 'alert-success alert-dismissible')
+            messages.success(request, f'Experiment "{experiment_name}" created successfully.', 'alert-success alert-dismissible')
             
             # Set a timer to automatically dismiss the success message after 2 seconds
             request.session['dismiss_success_message'] = timezone.now().timestamp() + 2000
             
             return JsonResponse({'success': True, 'exp_id': experiment.id})
         else:
-            messages.error(request, 'Failed to save experiment data')
+            # This else block might not be necessary as Experiment.objects.create() will either succeed or raise an exception
+            messages.error(request, 'Failed to save experiment data.')
             return JsonResponse({'success': False, 'message': 'Failed to save experiment data.'}, status=400)
     else:
-        messages.error(request, 'Only POST requests are allowed')
+        messages.error(request, 'Only POST requests are allowed.')
         return JsonResponse({'success': False, 'message': 'Only POST requests are allowed.'}, status=400)
 
-@csrf_exempt 
+@csrf_exempt
+@login_required
 @require_http_methods(["POST"])
 def delete_experiment(request, experiment_id):
     try:
@@ -84,6 +172,7 @@ def delete_experiment(request, experiment_id):
             'message': 'Failed to delete experiment. Error: {}'.format(str(e))
         }, status=500)
 
+@login_required
 def view_experiment(request, experiment_id):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     training_jobs = TrainingJob.objects.filter(experiment=experiment)
@@ -100,6 +189,7 @@ def view_experiment(request, experiment_id):
     })
 
 @csrf_exempt
+@login_required
 @require_http_methods(["POST"])
 def create_model_and_start_training_ajax(request):
     # Decode JSON data from the request body
@@ -167,7 +257,7 @@ def create_model_and_start_training_ajax(request):
 
         return JsonResponse({
             "status": "success",
-            "message": f"Model '{data.get('modelName', '')}' and training job created successfully.",
+            # "message": f"Model '{data.get('modelName', '')}' and training job created successfully.",
             "model_id": model_instance.id,
             "training_job_id": training_job_instance.id,
             "redirect_url": monitor_url
@@ -177,7 +267,8 @@ def create_model_and_start_training_ajax(request):
             "status": "error",
             "message": str(e)
         })
-        
+
+@login_required
 def monitor_training(request, training_job_id):
     training_job = get_object_or_404(TrainingJob, pk=training_job_id)
     # Optionally, fetch additional data related to the training job
@@ -189,6 +280,7 @@ def monitor_training(request, training_job_id):
     }
     return render(request, 'exps/monitor_training.html', context)
 
+@login_required
 def new_model(request):
     if request.method == 'POST':
         # Parse JSON data from the request body
@@ -227,10 +319,12 @@ def new_model(request):
     
     return JsonResponse({'success': False, 'message': 'Only POST requests are allowed.'}, status=400)
 
+@login_required
 def model_detail(request, model_id):
     model = Model.objects.get(pk=model_id)
     return render(request, 'model_detail.html', {'model': model})
 
+@login_required
 def upload(request):
     if request.method == 'POST' and request.FILES.get('file'):
         uploaded_file = request.FILES['file']
@@ -246,6 +340,7 @@ def upload(request):
         return redirect('datasets')
     return render(request, 'datasets.html', {'file_uploaded': False})
 
+@login_required
 def get_datasets(request):
     row_count = request.GET.get('rowCount')
     # Fetch datasets based on the specified row count
@@ -256,6 +351,7 @@ def get_datasets(request):
         dataset_rows += f"<tr><td>{dataset.file_name}</td><td>{dataset.upload_date}</td><td><button class='btn btn-primary'>EDA</button></td><td><button class='btn btn-danger' onclick='deleteDataset({dataset.id})'><i class='fas fa-trash-alt'></i></button></td></tr>"
     return JsonResponse({'dataset_rows': dataset_rows})
 
+@login_required
 def delete_dataset(request, dataset_id):
     # Get the dataset object to delete
     dataset = get_object_or_404(Dataset, pk=dataset_id)
@@ -263,6 +359,7 @@ def delete_dataset(request, dataset_id):
     messages.error(request, f'Dataset {dataset.file_name} has been deleted successfully.')
     return redirect('datasets')
 
+@login_required
 def eda_page(request, dataset_id):
     try:
         dataset = Dataset.objects.get(id=dataset_id)

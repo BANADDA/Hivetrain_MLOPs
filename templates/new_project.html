@@ -2,91 +2,94 @@
 <!DOCTYPE html>
 <!-- Created by CodingLab |www.youtube.com/CodingLabYT-->
 <html lang="en" dir="ltr">
-<head>
-    <meta charset="UTF-8" />
-    <title>EchoMind | ResearchLabs</title>
-    <link rel="stylesheet" href="style.css" />
+  <head>
+    <!-- Meta Tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Boxicons CDN Link -->
-    <link rel="stylesheet" href="{% static 'fonts/icomoon/style.css' %}">
-    <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <!-- UniIcon CDN Link  -->
-    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet"/>
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    
+    <!-- Page Title -->
+    <title>Echo</title>
+    
+    <!-- Fonts and Icons -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter&display=swap">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Bootstrap JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet"/>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    
+    <!-- MDB JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"></script>
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css" rel="stylesheet"/>
+    
+    <!-- Your Custom Styles -->
+    <link rel="stylesheet" href="{% static 'fonts/icomoon/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <!-- JavaScript Libraries and Plugins -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
 </head>
+
 <body>
   <div id="overlay"></div>
-<!-- Fixed Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-  <div class="container-fluid">
-      <a href="{% url 'experiments' %}" class="navbar-brand">
-          <i class="bx bx-log-out"></i> EchoMind
-      </a>
-      <!-- Toggler/collapsible Button -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
+
+  <!-- Navbar -->
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-dark-green">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
       </button>
-      <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav mx-auto">
-              <li class="nav-item">
-                  <a class="nav-link" href="." onclick="setActive(this)">Experiments</a>
-              </li>
-              <!-- More nav items -->
-              <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="setActive(this)">Manage</a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="#" onclick="setActive(this)">Reports</a>
-              </li>
-          </ul>
-      </div>
-      <ul class="navbar-nav">
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <a class="navbar-brand mt-2 mt-lg-0" href="{% url 'experiments' %}">
+          <img src="{% static 'images/ECHO.png' %}" height="50" alt="ECHO" loading="lazy"/>
+        </a>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          
+          {% if request.user.is_authenticated %}
           <li class="nav-item">
-              <img src="https://i.pinimg.com/originals/d5/b0/4c/d5b04cc3dcd8c17702549ebc5f1acf1a.png" alt="User Avatar" class="avatar d-none d-md-block">
+            <a class="nav-link" href="#">Dashboard</a>
           </li>
-      </ul>
-  </div>
-</nav>
-
-<!-- Scrollable Navbar -->
-{% comment %} <nav class="navbar nav2 navbar-expand-md bg-dark navbar-dark">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar2">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse justify-content-center" id="navbar2">
-        <!-- Center-aligned items -->
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'experiments' %}">Experiments</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Reports</a>
+          </li>
+        </ul>
+      </div>
+      <div class="d-flex align-items-center">
         <ul class="navbar-nav">
-            <li class="nav-item mb-2 mb-md-0">
-                <a class="nav-link" href="#" onclick="setActive(this)">Experiments</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img (31).webp" class="rounded-circle" height="22" alt="Portrait of a Woman" loading="lazy"/>
+            </a>      
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <li><a class="dropdown-item" href="#">My profile</a></li>
+              <li><a class="dropdown-item" href="#">Settings</a></li>
+              <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+          </li>
+          {% else %}
+          <li class="nav-item">
+              <a class="nav-link" href="{% url 'signup' %}">Signup</a>
             </li>
-            <li class="nav-item mb-2 mb-md-0">
-                <a class="nav-link" href="#" onclick="setActive(this)">Models</a>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'login' %}">Login</a>
             </li>
-            <li class="nav-item mb-2 mb-md-0">
-                <a class="nav-link" href="#" onclick="setActive(this)">Manage</a>
-            </li>
-            <li class="nav-item mb-2 mb-md-0">
-                <a class="nav-link" href="#" onclick="setActive(this)">Reports</a>
-            </li>
-        </ul>        
+            {% endif %}
+        </ul>
+      </div>
     </div>
-</nav> {% endcomment %}
-
-
+  </nav>
 <!-- Content Section -->
 <section class="home-section pb-20 mb-5" style="background-color: #E2F6F4;">
     <!--base.html-->
@@ -345,6 +348,52 @@
       font-weight: 600;
       color: #fff;
     }
+    /* Custom Navbar Styles */
+.bg-dark-green {
+  background-color: #004d40 !important; /* Dark Green Color */
+}
+
+.navbar-light .navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.navbar-light .navbar-nav .nav-link:hover,
+.navbar-light .navbar-nav .nav-link:focus {
+  color: rgba(255, 255, 255, 1);
+}
+
+.navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-toggler-icon {
+  filter: invert(1); /* Makes the icon white */
+}
+
+.dropdown-menu {
+  margin-top: 0;
+}
+
+/* Custom Dropdown Menu Styles */
+.dropdown-menu li a {
+  color: #004d40; /* Dark green text */
+}
+
+.dropdown-menu li a:hover {
+  background-color: #f8f9fa;
+}
+
+/* Adjustments for small devices */
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    background-color: #004d40; /* Ensure the collapsed menu has the same bg color */
+  }
+  .navbar-nav .dropdown-menu {
+    position: static; /* Display dropdowns inline on small screens */
+    float: none;
+  }
+}
+
 </style>
 
 <!-- Initialize Bootstrap components -->
@@ -402,6 +451,11 @@ function showMessage(message, type) {
         element.classList.add('active');
     }
 </script>
+<!-- MDB -->
+<script
+type="text/javascript"
+src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
+></script>
 
 </body>
 </html>

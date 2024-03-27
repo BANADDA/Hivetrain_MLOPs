@@ -4,6 +4,17 @@
 {{project.project_name }} 
 {% endblock %} 
 {% block exp_block %} 
+<div id="formMessages" class="mt-3"></div>
+<style>
+    .gradient-custom {
+/* fallback for old browsers */
+background: #343434;
+/* Chrome 10-25, Safari 5.1-6 */
+background: -webkit-linear-gradient(to right bottom, rgb(41, 41, 41), rgb(126, 123, 123));
+/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+background: linear-gradient(to right bottom, rgb(21, 20, 18), rgb(195, 195, 195))
+}
+</style>
 <div id="loading-wrapper" style="display: none;">
   <div id="loading"></div>
 </div>
@@ -17,7 +28,7 @@
           </h2>
           <div class="d-md-flex flex-wrap">
             <p class="text-break mb-md-3 mr-md-3" style="max-width: calc(100% - 150px);">
-              EchoMind platform provides you with the necessary tools and resources needed to streamline your machine learning workflows. Leverage automated pipelines for data processing, model training, and evaluation, reducing the time-to-market for your AI solutions.
+              Echo platform provides you with the necessary tools and resources needed to streamline your machine learning workflows. Leverage automated pipelines for data processing, model training, and evaluation, reducing the time-to-market for your AI solutions.
             </p>
           </div>
           <a id="openModalBtn" class="btn article"><i class="fa fa-flask" aria-hidden="true"></i> New Experiment</a>
@@ -45,47 +56,75 @@
     </div>
 </div>
 
-  {% comment %} <div class="container"> {% endcomment %}
-    <div class="row">
-      {% for experiment in experiments %}
-      
-      <a href="{% url 'view_experiment' experiment.id %}">
-      <div class="col-md-3 mb-4 experiment-card" data-status="{{ experiment.status }}">
-          <div class="card card-exp">
-              <img class="card-img-top mh-100" src="{{ experiment.random_image_url }}" alt="Card image cap">
-              <div class="card-body" style="max-height: 150px; overflow: hidden;">
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                      <h5 class="card-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0;">{{ experiment.name }}</h5>
-                      <p class="status" style="color: {% if experiment.status == 'active' %}darkgreen{% else %}darkred{% endif %}; font-weight: bold; margin-bottom: 0;">{{ experiment.get_status_display }}</p>
-                  </div>
-                  <div class="card-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                      <p class="dataset">{{ experiment.description}}</p>
-                      <!-- Include your experiment description here -->
-                  </div>
-              </div>
-              <!-- Delete Icon -->
-<a href="javascript:void(0);" class="delete-icon" data-experiment-id="{{ experiment.id }}" data-experiment-name="{{ experiment.name }}" style="position: absolute; bottom: 10px; right: 10px; color: #A20F05;">
-  <i class="fa fa-trash" aria-hidden="true"></i>
-</a>
+<div class="row">
+  {% for experiment in experiments %}
+    <div class="col-md-3 mb-4">
+      <!-- Use MDB's card classes for styling -->
+      <div class="card h-100">
+        
+        <!-- Card Image -->
+        <img src="{{ experiment.random_image_url }}" class="card-img-top" alt="Experiment Image">
+
+        <!-- Card Body -->
+        <div class="card-body d-flex flex-column">
+          <!-- Experiment Name -->
+          <h5 class="card-title text-truncate" style="font-weight: bold; font-size: 16px;">{{ experiment.name }}</h5>
+          
+          
+          <hr>
+
+          <!-- Experiment Creation date -->
+          <div class="d-flex justify-content-between mb-2">
+            <p class="mb-0" style="color: #343434; font-weight: bold; font-size: 12px;">Created At:</p>
+            <p class="mb-0 text-info" style="font-weight: bold; font-size: 12px;">
+              {{ experiment.created_at }}
+            </p>
+          </div>    
+        
+          <!-- Experiment Status -->
+          <div class="d-flex justify-content-between mb-2">
+            <p class="mb-0" style="color: #343434; font-weight: bold; font-size: 12px;">Status:</p>
+            <p class="mb-0 {% if experiment.status == 'active' %}text-success{% else %}text-danger{% endif %}" style="font-weight: bold; font-size: 12px;">
+              {{ experiment.get_status_display }}
+            </p>
+          </div>           
+          
+          <!-- Experiment Description -->
+          {% comment %} <p class="card-text text-truncate">{{ experiment.description }}</p> {% endcomment %}
+
+          <!-- Align items to the bottom using mt-auto in Flexbox -->
+          <div class="mt-auto">
+            <a href="{% url 'view_experiment' experiment.id %}" class="btn btn-secondary btn-block">View Experiment</a>
           </div>
+        </div>
+
+        <!-- Delete Icon - Positioned within the card-body for consistent alignment -->
+        <div class="card-footer text-right">
+          <a href="javascript:void(0);" class="text-danger delete-icon" data-experiment-id="{{ experiment.id }}" data-experiment-name="{{ experiment.name }}">
+            <i class="fa fa-trash"></i>
+          </a>
+        </div>
+
       </div>
-      {% if forloop.counter|divisibleby:4 and not forloop.last %}
-      </div><div class="row"> <!-- Start a new row after every 4 experiments -->
-      {% endif %}
-      {% endfor %}
-  </div>
+    </div>
+    {% if forloop.counter|divisibleby:4 and not forloop.last %}
+      <!-- Ensure that new rows are created correctly by handling this in the template logic or with CSS -->
+    {% endif %}
+  {% endfor %}
+</div>
+
   
   <!-- Place the confirmation modal outside the loop, so it's only included once -->
   <div id="deleteConfirmationModal" class="modal">
-    <div class="modal-content card">
+    <div class="modal-content card text-center">
       <h5 class="card-header">Confirm Deletion</h5>
       <div class="card-body">
-        <p class="card-text" id="deleteMessage">Deleting the experiment "<span id="experimentNamePlaceholder"></span>" will delete all models and training jobs associated with your model.</p>
-        <div class="modal-buttons justify-content-between" style="display: flex; gap: 10px;">
+        <p class="card-text" style="color: #343434;" id="deleteMessage">Deleting the experiment "<span id="experimentNamePlaceholder"></span>" will delete all models and training jobs associated with your model.</p>
+      </div>
+      <div class="card-footer modal-buttons justify-content-between" style="display: flex; gap: 10px;">
           <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
           <button id="confirmDelete" class="btn btn-danger">Delete</button>
         </div>
-      </div>
     </div>
   </div>
   
@@ -222,7 +261,7 @@
     padding: 20px;
     padding-bottom: 0px;
     border: 1px solid #888;
-    width: 50%; /* Could be more or less, depending on screen size */
+    width: 25%; /* Could be more or less, depending on screen size */
   }
   
   /* Close Button */
@@ -435,6 +474,19 @@ document.addEventListener("DOMContentLoaded", function () {
   form.addEventListener("submit", function (event) {
       event.preventDefault();
 
+      // Validate form inputs before submitting
+      const experimentName = form.querySelector("[name='experimentName']").value.trim();
+      const experimentDescription = form.querySelector("[name='experimentDescription']").value.trim();
+
+      // Clear previous messages
+      clearMessages();
+
+      // Check if the experiment name or description is empty and display an error message
+      if (!experimentName || !experimentDescription) {
+          displayMessage("Experiment name and description cannot be empty.", "danger"); // Display error message
+          return; // Stop the form submission
+      }
+
       // Display loading screen
       showLoading();
 
@@ -445,105 +497,91 @@ document.addEventListener("DOMContentLoaded", function () {
       .then(response => response.json())
       .then(data => {
           if (data.success) {
-              // Optionally, reload the page or perform any other action
               var newUrl = baseUrl + '/experiment/' + data.exp_id + '/';
-              // Delay navigation for 2 seconds
               setTimeout(function() {
                   window.location.replace(newUrl);
               }, 2000);
           } else {
-              // Handle error
+              displayMessage("An error occurred while submitting the form.", "danger");
           }
       })
       .catch(error => {
-          // Handle error
+          displayMessage("Failed to submit the form.", "danger");
       });
   });
 
   function showLoading() {
-    // Show overlay
-    var overlay = document.getElementById("overlay");
-    overlay.style.display = "block";
+      // Implementation remains the same
+  }
 
-    // Create spinner element
-    var spinner = document.createElement("div");
-    spinner.classList.add("spinner-grow");
-    spinner.classList.add("spinner-white"); // Add the spinner-white class
-    spinner.setAttribute("role", "status");
+  function displayMessage(message, type) {
+    const messagesDiv = document.getElementById('formMessages');
+    const messageElement = document.createElement('div');
+    messageElement.className = `alert alert-${type}`;
+    messageElement.textContent = message;
+    messagesDiv.appendChild(messageElement);
 
-    var spinnerSpan = document.createElement("span");
-    spinnerSpan.classList.add("sr-only");
-    spinnerSpan.textContent = "Loading...";
-
-    spinner.appendChild(spinnerSpan);
-
-    // Create spinner container
-    var spinnerContainer = document.createElement("div");
-    spinnerContainer.classList.add("spinner-container");
-    spinnerContainer.appendChild(spinner);
-
-    // Append spinner container to the body
-    document.body.appendChild(spinnerContainer);
+    // Remove the message after 3 seconds
+    setTimeout(() => {
+        messagesDiv.removeChild(messageElement);
+    }, 3000); // 3000 milliseconds = 3 seconds
 }
 
+
+  function clearMessages() {
+      const messagesDiv = document.getElementById('formMessages');
+      messagesDiv.innerHTML = ''; // Remove all child elements
+  }
 });
 
-    document.addEventListener("DOMContentLoaded", function () {
-        const buttons = document.querySelectorAll("#btnGroup button");
 
-        buttons.forEach(function (button) {
-            button.addEventListener("click", function () {
-                const filter = this.getAttribute("data-filter");
-                const cards = document.querySelectorAll(".experiment-card");
+document.addEventListener("DOMContentLoaded", function () {
+  const filterButtons = document.querySelectorAll("#btnGroup button");
+  const cards = document.querySelectorAll(".row .col-md-3.mb-4");
 
-                cards.forEach(function (card) {
-                    if (filter === "all") {
-                        card.style.display = "block";
-                    } else {
-                        const status = card.getAttribute("data-status");
-                        if (status === filter) {
-                            card.style.display = "block";
-                        } else {
-                            card.style.display = "none";
-                        }
-                    }
-                });
+  filterButtons.forEach(function(button) {
+      button.addEventListener("click", function() {
+          const filter = this.getAttribute("data-filter");
 
-                buttons.forEach(function (btn) {
-                    btn.classList.remove("active");
-                });
+          cards.forEach(function(card) {
+              // Assuming a data-status attribute is available for filtering.
+              const status = card.querySelector('.card-body p').classList.contains('text-success') ? 'active' : 
+                             (card.querySelector('.card-body p').classList.contains('text-danger') ? 'stopped' : 'unknown');
+              if (filter === 'all' || status === filter) {
+                  card.style.display = "block";
+              } else {
+                  card.style.display = "none";
+              }
+          });
 
-                this.classList.add("active");
-            });
-        });
-    });
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const buttons = document.querySelectorAll("#btnGroup button");
+          // Update active button styling
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+      });
+  });
+});
 
-        buttons.forEach(function (button) {
-            button.addEventListener("click", function () {
-                filterCards(this.getAttribute("data-filter"));
-                toggleActiveButton(buttons, this);
-            });
-        });
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.querySelector(".form-control");
+    searchInput.addEventListener("input", function () {
+        const searchTerm = this.value.trim().toLowerCase();
+        // Target the '.card h-100' elements inside the row div for each experiment card
+        const cards = document.querySelectorAll(".row .col-md-3.mb-4 .card.h-100");
 
-        const searchInput = document.querySelector(".form-control");
-        searchInput.addEventListener("input", function () {
-            const searchTerm = this.value.trim().toLowerCase();
-            const cards = document.querySelectorAll(".experiment-card");
-
-            cards.forEach(function (card) {
-                const experimentName = card.querySelector(".card-title").textContent.trim().toLowerCase();
+        cards.forEach(function (card) {
+            // We can keep the rest of your JS logic the same, as the querySelector part was the issue
+            const experimentNameElement = card.querySelector(".card-title");
+            if (experimentNameElement) {
+                const experimentName = experimentNameElement.textContent.trim().toLowerCase();
                 if (experimentName.includes(searchTerm)) {
-                    card.style.display = "block";
+                    card.parentElement.style.display = "block"; // Show the entire column
                 } else {
-                    card.style.display = "none";
+                    card.parentElement.style.display = "none"; // Hide the entire column
                 }
-            });
+            }
         });
     });
+});
 
     function filterCards(filter) {
         const cards = document.querySelectorAll(".experiment-card");

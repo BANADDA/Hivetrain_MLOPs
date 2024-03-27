@@ -5,10 +5,13 @@ from .views import (create_model_and_start_training_ajax, datasets,
                     delete_dataset, delete_experiment, eda_page,
                     experiment_list, get_datasets, index, model_detail,
                     monitor_training, new_model, submit_experiment, upload,
-                    view_experiment)
+                    user_login, user_logout, user_signup, view_experiment)
 
 urlpatterns = [
     path('', experiment_list, name='index'),
+    path('login/', user_login, name='login'),
+    path('signup/', user_signup, name='signup'),
+    path('logout/', user_logout, name='logout'),
     path('datasets/', datasets, name='datasets'),
     path('datasets/upload/', upload, name='upload'),
     path('datasets/<int:dataset_id>/eda/', eda_page, name='eda_page'),

@@ -1,0 +1,68 @@
+{% extends "new_project.html" %}
+{% load static %}
+
+{% block exp_block %}
+<div class="row">
+    <div class="col-4"></div>
+    <div class="col-4 mt-4 card">
+        <h3 class="text-center my-5" style="font-family: Georgia, serif; font-size: 40px;">Signup Page</h3> 
+        <form action="" method="post" novalidate>
+          {% csrf_token %}
+          {% for fm in form %}
+            {% if fm.name != 'password1' and fm.name != 'password2' %}
+              <div class="form-group mb-2">
+                {{ fm.label_tag }} {{ fm }}
+                <small class="text-warning">{{ fm.errors|striptags }}</small>
+              </div>
+            {% endif %}
+          {% endfor %}
+          
+          <!-- Custom rendering for password fields -->
+          <div class="form-group mb-2 position-relative">
+            {{ form.password1.label_tag }} {{ form.password1 }}
+            <span class="toggle-password" style="position: absolute; right: 10px; top: 35px; cursor: pointer;">
+              <i class="fa fa-eye"></i>
+            </span>
+            <small class="text-warning">{{ form.password1.errors|striptags }}</small>
+          </div>
+          <div class="form-group mb-2 position-relative">
+            {{ form.password2.label_tag }} {{ form.password2 }}
+            <span class="toggle-password" style="position: absolute; right: 10px; top: 35px; cursor: pointer;">
+              <i class="fa fa-eye"></i>
+            </span>
+            <small class="text-warning">{{ form.password2.errors|striptags }}</small>
+          </div>
+
+          {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+              <p class="alert alert-danger my-3">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
+          <button type="submit" class="btn btn-dark btn-block mt-4">Signup</button>
+        </form>
+        <!-- Register buttons -->
+        <div class="text-center mt-4 mb-4">
+            <p>Already registered? <a class="text-dark" href="{% url 'login' %}"><b>Login</b></a></p>
+        </div>
+    </div>
+    <div class="col-4"></div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll('.toggle-password').forEach(item => {
+    item.onclick = () => {
+      let input = item.previousElementSibling; // Assumes input is immediately before toggle span
+      if (input.getAttribute('type') == 'password') {
+        input.setAttribute('type', 'text');
+        item.innerHTML = '<i class="fa fa-eye-slash"></i>';
+      } else {
+        input.setAttribute('type', 'password');
+        item.innerHTML = '<i class="fa fa-eye"></i>';
+      }
+    };
+  });
+});
+</script>
+
+{% endblock %}

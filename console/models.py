@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
@@ -9,8 +10,7 @@ class Dataset(models.Model):
     upload_date = models.DateTimeField(auto_now_add=True)
 
 class Experiment(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    # project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='experiments', null=True)
     name = models.CharField(max_length=100)
     description = models.TextField()
     STATUS_CHOICES = [
@@ -18,6 +18,8 @@ class Experiment(models.Model):
         ('stopped', 'Stopped'),
     ]
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
+    created_at = models.DateTimeField(auto_now_add=False, default=timezone.now)
+    closed_at = models.DateTimeField(null=True, blank=True)  # Allow nulls and blanks for a closing date that can be set later
 
     def __str__(self):
         return self.name
